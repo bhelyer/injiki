@@ -1,6 +1,7 @@
 module injiki.gui.window;
 
 import watt.conv;
+import watt.process;
 import watt.io.file;
 import watt.io.streams;
 
@@ -22,8 +23,12 @@ global GtkBuilder* _injiki_gtk_builder;
  */
 global this() {
 	gtk_init(null, null);
+	string glade = getEnv("INJIKI_GLADE");
+	if (glade == "") {
+		glade = GLADE_PATH;
+	}
 	_injiki_gtk_builder = gtk_builder_new();
-	gtk_builder_add_from_file(_injiki_gtk_builder, toStringz(GLADE_PATH), null);
+	gtk_builder_add_from_file(_injiki_gtk_builder, toStringz(glade), null);
 	loadCSS(CSS);
 }
 
