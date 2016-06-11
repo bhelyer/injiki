@@ -6,5 +6,4 @@ SCRIPT=`realpath $0`
 ARG=`realpath $1`
 SCRIPTPATH=`dirname $SCRIPT`
 export GTK_IM_MODULE=xim
-export INJIKI_GLADE=$SCRIPTPATH/injiki.glade
 $SCRIPTPATH/injiki.bin $*

@@ -6,6 +6,7 @@ extern (C):
 
 alias gint = i32;
 alias guint = u32;
+alias gsize = guint;
 alias guint32 = u32;
 alias gchar = char;
 alias gpointer = void*;
@@ -130,6 +131,7 @@ void gtk_style_context_add_provider_for_screen(GdkScreen*, GtkStyleProvider*, gu
 void gtk_init(int* argc, char*** argv);
 GtkBuilder* gtk_builder_new();
 guint gtk_builder_add_from_file(GtkBuilder*, const(gchar)*, GtkError*);
+guint gtk_builder_add_from_string(GtkBuilder*, const(gchar)*, gsize, void*);
 GtkObject* gtk_builder_get_object(GtkBuilder*, const(gchar)*);
 void gtk_builder_connect_signals(GtkBuilder*, gpointer);
 void g_object_unref(gpointer);

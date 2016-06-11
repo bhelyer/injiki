@@ -1,7 +1,6 @@
 module injiki.gui.window;
 
 import watt.conv;
-import watt.process;
 import watt.io.file;
 import watt.io.streams;
 
@@ -9,7 +8,7 @@ import lib.c.gtk;
 
 import injiki.exception;
 
-enum GLADE_PATH = "injiki.glade";
+global string GLADE = import("injiki.glade");
 // GTK <3.20 == GtkTextView, Gtk >= 3.20 == textview
 enum CSS = "GtkTextView, textview {
 	font-family: monospace;
@@ -23,12 +22,9 @@ global GtkBuilder* _injiki_gtk_builder;
  */
 global this() {
 	gtk_init(null, null);
-	string glade = getEnv("INJIKI_GLADE");
-	if (glade == "") {
-		glade = GLADE_PATH;
-	}
 	_injiki_gtk_builder = gtk_builder_new();
-	gtk_builder_add_from_file(_injiki_gtk_builder, toStringz(glade), null);
+	gtk_builder_add_from_string(_injiki_gtk_builder, toStringz(GLADE), 
+		cast(gsize)GLADE.length, null);
 	loadCSS(CSS);
 }
 
