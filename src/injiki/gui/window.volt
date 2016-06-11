@@ -58,6 +58,10 @@ void runGui() {
  */
 class Window {
 	this(string filename) {
+		open(filename);
+	}
+
+	void open(string filename) {
 		txt := cast(string)read(filename);
 		mFilename = filename;
 
@@ -93,11 +97,11 @@ Window getWindow(gpointer ptr) {
 	return win;
 }
 
-extern(C) void injiki_menu_quit(GtkWidget* widget, gpointer userData) {
+extern(C) void injiki_quit_cb(GtkWidget* widget, gpointer userData) {
 	gtk_main_quit();
 }
 
-extern(C) void injiki_menu_save(GtkWidget* widget, gpointer userData) {
+extern(C) void injiki_save_cb(GtkWidget* widget, gpointer userData) {
 	win := getWindow(userData);
 	ofs := new OutputFileStream(win.mFilename);
 	scope(exit) ofs.close();
@@ -108,3 +112,18 @@ extern(C) void injiki_menu_save(GtkWidget* widget, gpointer userData) {
 	g_free(cast(void*)str);
 }
 
+extern(C) void injiki_open_cb(GtkWidget* widget, gpointer userData) {
+	win := getWindow(userData);
+	act := GTK_FILE_CHOOSER_ACTION_OPEN;
+	openstr := toStringz("_Open");
+	closestr := toStringz("_Cancel");
+	dlg := gtk_file_chooser_dialog_new("Open File", GTK_WINDOW(win.mWindow), act,
+		closestr, GTK_RESPONSE_CANCEL, openstr, GTK_RESPONSE_ACCEPT, cast(void*)null);
+	res := gtk_dialog_run(GTK_DIALOG(dlg));
+	if (res == GTK_RESPONSE_ACCEPT) {
+		char* fname = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg));
+		win.open(toString(fname));
+		g_free(cast(void*)fname);
+	}
+	gtk_widget_destroy(dlg);
+}

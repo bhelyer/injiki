@@ -1,6 +1,9 @@
 module lib.c.gtk;
 extern (C):
 
+/* Bind only as much GTK as injiki needs.
+ */
+
 alias gint = i32;
 alias guint = u32;
 alias guint32 = u32;
@@ -15,11 +18,16 @@ struct GdkScreen {}
 struct GtkObject {}
 struct GtkBuilder {}
 struct GtkWidget {}
+struct GtkWindow {}
 struct GtkCssProvider {}
 struct GtkStyleProvider {}
 
 struct GtkTextView {}
 struct GtkTextBuffer {}
+
+struct GtkDialog {}
+struct GtkFileChooser {}
+struct GtkFileChooserDialog {}
 
 struct GtkTextIter {
 	gpointer dummy1;
@@ -45,7 +53,7 @@ struct GtkError {
 }
 
 GtkWidget* GTK_WIDGET(GtkObject* obj) {
-	auto ptr = cast(GtkWidget*)obj;
+	ptr := cast(GtkWidget*)obj;
 	if (ptr is null) {
 		throw new Exception("GTK_WIDGET failure");
 	}
@@ -53,7 +61,7 @@ GtkWidget* GTK_WIDGET(GtkObject* obj) {
 }
 
 GtkTextView* GTK_TEXT_VIEW(GtkWidget* obj) {
-	auto ptr = cast(GtkTextView*)obj;
+	ptr := cast(GtkTextView*)obj;
 	if (ptr is null) {
 		throw new Exception("GTK_TEXT_VIEW failure");
 	}
@@ -61,14 +69,59 @@ GtkTextView* GTK_TEXT_VIEW(GtkWidget* obj) {
 }
 
 GtkStyleProvider* GTK_STYLE_PROVIDER(GtkCssProvider* obj) {
-	auto ptr = cast(GtkStyleProvider*)obj;
+	ptr := cast(GtkStyleProvider*)obj;
 	if (ptr is null) {
 		throw new Exception("GTK_STYLE_PROVIDER failure");
 	}
 	return ptr;
 }
 
+GtkDialog* GTK_DIALOG(GtkWidget* obj) {
+	ptr := cast(GtkDialog*)obj;
+	if (ptr is null) {
+		throw new Exception("GTK_DIALOG failure");
+	}
+	return ptr;
+}
+
+GtkFileChooser* GTK_FILE_CHOOSER(GtkWidget* obj) {
+	ptr := cast(GtkFileChooser*)obj;
+	if (ptr is null) {
+		throw new Exception("GTK_FILE_CHOOSER failure");
+	}
+	return ptr;
+}
+
+GtkWindow* GTK_WINDOW(GtkWidget* obj) {
+	ptr := cast(GtkWindow*)obj;
+	if (ptr is null) {
+		throw new Exception("GTK_WINDOW failure");
+	}
+	return ptr;
+}
+
 enum GTK_STYLE_PROVIDER_PRIORITY_APPLICATION = 600;
+
+enum {
+	GTK_FILE_CHOOSER_ACTION_OPEN,
+	GTK_FILE_CHOOSER_ACTION_SAVE,
+	GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER,
+	GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER
+}
+
+enum {
+	GTK_RESPONSE_NONE,
+	GTK_RESPONSE_REJECT,
+	GTK_RESPONSE_ACCEPT,
+	GTK_RESPONSE_DELETE_EVENT,
+	GTK_RESPONSE_OK,
+	GTK_RESPONSE_CANCEL,
+	GTK_RESPONSE_CLOSE,
+	GTK_RESPONSE_YES,
+	GTK_RESPONSE_NO,
+	GTK_RESPONSE_APPLY,
+	GTK_RESPONSE_HELP
+}
 
 GdkDisplay* gdk_display_get_default();
 GdkScreen* gdk_display_get_default_screen(GdkDisplay*);
@@ -81,9 +134,16 @@ GtkObject* gtk_builder_get_object(GtkBuilder*, const(gchar)*);
 void gtk_builder_connect_signals(GtkBuilder*, gpointer);
 void g_object_unref(gpointer);
 void gtk_widget_show(GtkWidget*);
+void gtk_widget_destroy(GtkWidget*);
 void gtk_main();
 void gtk_main_quit();
 void g_free(gpointer);
+
+gint gtk_dialog_run(GtkDialog*);
+
+GtkWidget* gtk_file_chooser_dialog_new(const(gchar)*, GtkWindow*, 
+	int action, const(gchar)*, ...);
+gchar* gtk_file_chooser_get_filename(GtkFileChooser*);
 
 GtkCssProvider* gtk_css_provider_new();
 GtkCssProvider* gtk_css_provider_get_default();
