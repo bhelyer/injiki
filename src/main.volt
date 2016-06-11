@@ -1,11 +1,12 @@
 module main;
 
-import watt.io.file;
-
 import ved.gui;
 
 i32 main(string[] args) {
-	win := new Window(cast(string)read("src/main.volt"));
+	if (args.length == 1) {
+		return 0;
+	}
+	win := new Window(args[$-1]);
 	runGui();
 	return 0;
 }

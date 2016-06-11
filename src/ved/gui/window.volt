@@ -1,6 +1,8 @@
 module ved.gui.window;
 
 import watt.conv;
+import watt.io.file;
+import watt.io.streams;
 
 import lib.c.gtk;
 
@@ -38,7 +40,10 @@ void runGui() {
  * created.
  */
 class Window {
-	this(string txt) {
+	this(string filename) {
+		txt := cast(string)read(filename);
+		mFilename = filename;
+
 		mWindow = GTK_WIDGET(gtk_builder_get_object(_ved_gtk_builder, "buffer_window"));
 		mTextView = GTK_WIDGET(gtk_builder_get_object(_ved_gtk_builder,
 			"buffer_textview"));
@@ -51,6 +56,8 @@ class Window {
 	void close() {
 	}
 
+	protected string mFilename;
+
 	protected GtkWidget* mWindow;
 	protected GtkWidget* mTextView;
 	protected GtkTextBuffer* mGtkBuffer;
@@ -59,10 +66,26 @@ class Window {
 /*
  * Callbacks beyond this point.
  */
-extern(C) void ved_menu_quit(GtkWidget* widget, gpointer userData) {
-	win := cast(Window)userData;
+
+Window getWindow(gpointer ptr) {
+	win := cast(Window)ptr;
 	if (win is null) {
-		throw new VedException("failed to retrieve Window in callback");
+		throw new VedException("failed to retrieve window in callback");
 	}
+	return win;
+}
+extern(C) void ved_menu_quit(GtkWidget* widget, gpointer userData) {
 	gtk_main_quit();
+}
+
+extern(C) void ved_menu_save(GtkWidget* widget, gpointer userData)
+{
+	win := getWindow(userData);
+	ofs := new OutputFileStream(win.mFilename);
+	scope(exit) ofs.close();
+	GtkTextIter a, b;
+	gtk_text_buffer_get_bounds(win.mGtkBuffer, &a, &b);
+	const(char)* str = gtk_text_buffer_get_text(win.mGtkBuffer, &a, &b, false);
+	ofs.write(toString(str));
+	g_free(cast(void*)str);
 }
