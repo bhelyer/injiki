@@ -13,8 +13,7 @@ enum GLADE_PATH = "injiki.glade";
 enum CSS = "GtkTextView, textview {
 	font-family: monospace;
 }";
-// iii
-// WWW
+
 global GtkBuilder* _ved_gtk_builder;
 
 /**
@@ -93,12 +92,12 @@ Window getWindow(gpointer ptr) {
 	}
 	return win;
 }
+
 extern(C) void ved_menu_quit(GtkWidget* widget, gpointer userData) {
 	gtk_main_quit();
 }
 
-extern(C) void ved_menu_save(GtkWidget* widget, gpointer userData)
-{
+extern(C) void ved_menu_save(GtkWidget* widget, gpointer userData) {
 	win := getWindow(userData);
 	ofs := new OutputFileStream(win.mFilename);
 	scope(exit) ofs.close();
