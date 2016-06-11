@@ -1,4 +1,4 @@
-module ved.gui.window;
+module injiki.gui.window;
 
 import watt.conv;
 import watt.io.file;
@@ -6,9 +6,9 @@ import watt.io.streams;
 
 import lib.c.gtk;
 
-import ved.exception;
+import injiki.exception;
 
-enum GLADE_PATH = "ved.glade";
+enum GLADE_PATH = "injiki.glade";
 // GTK <3.20 == GtkTextView, Gtk >= 3.20 == textview
 enum CSS = "GtkTextView, textview {
 	font-family: monospace;
@@ -89,7 +89,7 @@ class Window {
 Window getWindow(gpointer ptr) {
 	win := cast(Window)ptr;
 	if (win is null) {
-		throw new VedException("failed to retrieve window in callback");
+		throw new InjikiException("failed to retrieve window in callback");
 	}
 	return win;
 }

@@ -1,6 +1,6 @@
 module main;
 
-import ved.gui;
+import injiki.gui;
 
 i32 main(string[] args) {
 	if (args.length == 1) {
