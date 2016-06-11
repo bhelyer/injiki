@@ -9,18 +9,19 @@ alias gpointer = void*;
 alias gboolean = gint;
 alias GQuark = guint32;
 
+struct GdkDisplay {}
+struct GdkScreen {}
+
 struct GtkObject {}
 struct GtkBuilder {}
 struct GtkWidget {}
+struct GtkCssProvider {}
+struct GtkStyleProvider {}
 
 struct GtkTextView {}
 struct GtkTextBuffer {}
+
 struct GtkTextIter {
-	/* GtkTextIter is an opaque datatype; ignore all these fields.
-	 * Initialize the iter with gtk_text_buffer_get_iter_*
-	 * functions
-	 */
-	/*< private >*/
 	gpointer dummy1;
 	gpointer dummy2;
 	gint dummy3;
@@ -33,7 +34,6 @@ struct GtkTextIter {
 	gpointer dummy10;
 	gint dummy11;
 	gint dummy12;
-	/* padding */
 	gint dummy13;
 	gpointer dummy14;
 }
@@ -60,6 +60,20 @@ GtkTextView* GTK_TEXT_VIEW(GtkWidget* obj) {
 	return ptr;
 }
 
+GtkStyleProvider* GTK_STYLE_PROVIDER(GtkCssProvider* obj) {
+	auto ptr = cast(GtkStyleProvider*)obj;
+	if (ptr is null) {
+		throw new Exception("GTK_STYLE_PROVIDER failure");
+	}
+	return ptr;
+}
+
+enum GTK_STYLE_PROVIDER_PRIORITY_APPLICATION = 600;
+
+GdkDisplay* gdk_display_get_default();
+GdkScreen* gdk_display_get_default_screen(GdkDisplay*);
+void gtk_style_context_add_provider_for_screen(GdkScreen*, GtkStyleProvider*, guint);
+
 void gtk_init(int* argc, char*** argv);
 GtkBuilder* gtk_builder_new();
 guint gtk_builder_add_from_file(GtkBuilder*, const(gchar)*, GtkError*);
@@ -71,7 +85,12 @@ void gtk_main();
 void gtk_main_quit();
 void g_free(gpointer);
 
+GtkCssProvider* gtk_css_provider_new();
+GtkCssProvider* gtk_css_provider_get_default();
+gboolean gtk_css_provider_load_from_data(GtkCssProvider*, const(gchar)*, int, void*);
+
 GtkTextBuffer* gtk_text_view_get_buffer(GtkTextView*);
+void gtk_text_view_set_monospace(GtkTextView*, gboolean);
 
 void gtk_text_buffer_set_text(GtkTextBuffer*, const gchar* text, gint len);
 gchar* gtk_text_buffer_get_text(GtkTextBuffer*, GtkTextIter* start, GtkTextIter* end, gboolean showHiddenChars);

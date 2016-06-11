@@ -173,6 +173,9 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="monospace">True</property>
+            <style>
+              <class name="textview"/>
+            </style>
           </object>
           <packing>
             <property name="expand">True</property>

@@ -9,7 +9,12 @@ import lib.c.gtk;
 import ved.exception;
 
 enum GLADE_PATH = "ved.glade";
-
+// GTK <3.20 == GtkTextView, Gtk >= 3.20 == textview
+enum CSS = "GtkTextView, textview {
+	font-family: monospace;
+}";
+// iii
+// WWW
 global GtkBuilder* _ved_gtk_builder;
 
 /**
@@ -20,10 +25,23 @@ global this() {
 	gtk_init(null, null);
 	_ved_gtk_builder = gtk_builder_new();
 	gtk_builder_add_from_file(_ved_gtk_builder, toStringz(GLADE_PATH), null);
+	loadCSS(CSS);
 }
 
 global ~this() {
 	g_object_unref(cast(gpointer)_ved_gtk_builder);
+}
+
+void loadCSS(string s) {
+	str := toStringz(s);
+	provider := gtk_css_provider_new();
+	display := gdk_display_get_default();
+	screen := gdk_display_get_default_screen(display);
+	gtk_style_context_add_provider_for_screen(screen,
+		GTK_STYLE_PROVIDER(provider),
+		GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_css_provider_load_from_data(provider, str, cast(int)s.length, null);
+	g_object_unref(cast(gpointer)provider);
 }
 
 /**
@@ -47,6 +65,7 @@ class Window {
 		mWindow = GTK_WIDGET(gtk_builder_get_object(_ved_gtk_builder, "buffer_window"));
 		mTextView = GTK_WIDGET(gtk_builder_get_object(_ved_gtk_builder,
 			"buffer_textview"));
+		gtk_text_view_set_monospace(GTK_TEXT_VIEW(mTextView), true);
 		mGtkBuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(mTextView));
 		gtk_text_buffer_set_text(mGtkBuffer, toStringz(txt), cast(gint)txt.length);
 		gtk_builder_connect_signals(_ved_gtk_builder, cast(gpointer)this);
@@ -89,3 +108,4 @@ extern(C) void ved_menu_save(GtkWidget* widget, gpointer userData)
 	ofs.write(toString(str));
 	g_free(cast(void*)str);
 }
+
