@@ -63,7 +63,10 @@ class Window {
 	}
 
 	void open(string filename) {
-		txt := cast(string)read(filename);
+		string txt;
+		if (exists(filename)) {
+			txt = cast(string)read(filename);
+		}
 		mFilename = filename;
 
 		mWindow = GTK_WIDGET(gtk_builder_get_object(_injiki_gtk_builder, "buffer_window"));
