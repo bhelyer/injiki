@@ -11,6 +11,7 @@ alias guint32 = u32;
 alias gchar = char;
 alias gpointer = void*;
 alias gboolean = gint;
+alias gdouble = f64;
 alias GQuark = guint32;
 
 struct GdkDisplay {}
@@ -25,6 +26,7 @@ struct GtkStyleProvider {}
 
 struct GtkTextView {}
 struct GtkTextBuffer {}
+struct GtkTextMark {}
 
 struct GtkDialog {}
 struct GtkFileChooser {}
@@ -155,7 +157,17 @@ gboolean gtk_css_provider_load_from_data(GtkCssProvider*, const(gchar)*, int, vo
 
 GtkTextBuffer* gtk_text_view_get_buffer(GtkTextView*);
 void gtk_text_view_set_monospace(GtkTextView*, gboolean);
+void gtk_text_view_scroll_to_mark (GtkTextView *text_view, GtkTextMark *mark,
+	gdouble within_margin, gboolean use_align, gdouble xalign, gdouble yalign);
 
 void gtk_text_buffer_set_text(GtkTextBuffer*, const gchar* text, gint len);
 gchar* gtk_text_buffer_get_text(GtkTextBuffer*, GtkTextIter* start, GtkTextIter* end, gboolean showHiddenChars);
 void gtk_text_buffer_get_bounds(GtkTextBuffer*, GtkTextIter* start, GtkTextIter* end);
+void gtk_text_buffer_get_iter_at_line_offset(GtkTextBuffer *buffer, GtkTextIter *iter, gint line_number, gint char_offset);
+gint gtk_text_buffer_get_line_count(GtkTextBuffer *buffer);
+void gtk_text_buffer_add_mark(GtkTextBuffer *buffer, GtkTextMark *mark, const GtkTextIter *where);
+void gtk_text_buffer_delete_mark(GtkTextBuffer *buffer, GtkTextMark *mark);
+
+GtkTextMark* gtk_text_mark_new(const gchar* name, gboolean left_gravity);
+
+void gtk_text_iter_set_line(GtkTextIter *iter, gint line_number);

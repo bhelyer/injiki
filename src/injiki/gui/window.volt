@@ -83,6 +83,33 @@ class Window {
 	void close() {
 	}
 
+	/**
+	 * Scroll to the given line in the buffer.
+	 * If given line is less than 0, it will scroll to the first line.
+	 * If given line is greater or equal to the number of lines, it will
+	 * scroll to the last line.
+	 */
+	void scrollToLine(int line) {
+		i32 lineCount = gtk_text_buffer_get_line_count(mGtkBuffer);
+		if (line >= lineCount) {
+			line = lineCount - 1;
+		}
+		if (line < 0) {
+			line = 0;
+		}
+		tv := GTK_TEXT_VIEW(mTextView);
+		GtkTextIter iter;
+		gtk_text_buffer_get_iter_at_line_offset(mGtkBuffer,
+			&iter, line, 0);
+		scroll2mark := gtk_text_mark_new(null, false);
+		gtk_text_buffer_add_mark(mGtkBuffer, scroll2mark, &iter);
+		gtk_text_view_scroll_to_mark(tv, scroll2mark, 0.0, true, 0.0, 0.17);
+		gtk_text_buffer_delete_mark(mGtkBuffer, scroll2mark);
+	}
+
+	/**
+	 * Set the window title.
+	 */
 	@property void title(string s) {
 		cstr := toStringz(s);
 		gtk_window_set_title(GTK_WINDOW(mWindow), cstr);
