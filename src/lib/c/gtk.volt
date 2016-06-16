@@ -32,6 +32,8 @@ struct GtkDialog {}
 struct GtkFileChooser {}
 struct GtkFileChooserDialog {}
 
+struct GtkSpinButton {}
+
 struct GtkTextIter {
 	gpointer dummy1;
 	gpointer dummy2;
@@ -95,6 +97,22 @@ GtkDialog* GTK_DIALOG(GtkWidget* obj) {
 	return ptr;
 }
 
+GtkDialog* GTK_DIALOG(GtkObject* obj) {
+	ptr := cast(GtkDialog*)obj;
+	if (ptr is null) {
+		throw new Exception("GTK_DIALOG failure");
+	}
+	return ptr;
+}
+
+GtkSpinButton* GTK_SPIN_BUTTON(GtkObject* obj) {
+	ptr := cast(GtkSpinButton*)obj;
+	if (ptr is null) {
+		throw new Exception("GTK_SPIN_BUTTON failure");
+	}
+	return ptr;
+}
+
 GtkFileChooser* GTK_FILE_CHOOSER(GtkWidget* obj) {
 	ptr := cast(GtkFileChooser*)obj;
 	if (ptr is null) {
@@ -138,6 +156,7 @@ GtkObject* gtk_builder_get_object(GtkBuilder*, const(gchar)*);
 void gtk_builder_connect_signals(GtkBuilder*, gpointer);
 void g_object_unref(gpointer);
 void gtk_widget_show(GtkWidget*);
+void gtk_widget_hide(GtkWidget*);
 void gtk_widget_destroy(GtkWidget*);
 void gtk_main();
 void gtk_main_quit();
@@ -167,7 +186,10 @@ void gtk_text_buffer_get_iter_at_line_offset(GtkTextBuffer *buffer, GtkTextIter 
 gint gtk_text_buffer_get_line_count(GtkTextBuffer *buffer);
 void gtk_text_buffer_add_mark(GtkTextBuffer *buffer, GtkTextMark *mark, const GtkTextIter *where);
 void gtk_text_buffer_delete_mark(GtkTextBuffer *buffer, GtkTextMark *mark);
+void gtk_text_buffer_place_cursor (GtkTextBuffer *buffer, const GtkTextIter *where);
 
 GtkTextMark* gtk_text_mark_new(const gchar* name, gboolean left_gravity);
 
 void gtk_text_iter_set_line(GtkTextIter *iter, gint line_number);
+
+gint gtk_spin_button_get_value_as_int(GtkSpinButton *spin_button);

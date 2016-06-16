@@ -85,11 +85,12 @@ class Window {
 
 	/**
 	 * Scroll to the given line in the buffer.
-	 * If given line is less than 0, it will scroll to the first line.
+	 * If given line is less than 1, it will scroll to the first line.
 	 * If given line is greater or equal to the number of lines, it will
 	 * scroll to the last line.
 	 */
 	void scrollToLine(int line) {
+		line--;  // Buffer counts from zero, humans from one.
 		i32 lineCount = gtk_text_buffer_get_line_count(mGtkBuffer);
 		if (line >= lineCount) {
 			line = lineCount - 1;
@@ -104,6 +105,7 @@ class Window {
 		scroll2mark := gtk_text_mark_new(null, false);
 		gtk_text_buffer_add_mark(mGtkBuffer, scroll2mark, &iter);
 		gtk_text_view_scroll_to_mark(tv, scroll2mark, 0.0, true, 0.0, 0.17);
+		gtk_text_buffer_place_cursor(mGtkBuffer, &iter);
 		gtk_text_buffer_delete_mark(mGtkBuffer, scroll2mark);
 	}
 
@@ -163,4 +165,16 @@ extern(C) void injiki_open_cb(GtkWidget* widget, gpointer userData) {
 		g_free(cast(void*)fname);
 	}
 	gtk_widget_destroy(dlg);
+}
+
+extern(C) void injiki_goto_cb(GtkWidget* widget, gpointer userData) {
+	win := getWindow(userData);
+	dlg := GTK_WIDGET(gtk_builder_get_object(_injiki_gtk_builder, "gotoline_dialog"));
+	spin := GTK_SPIN_BUTTON(gtk_builder_get_object(_injiki_gtk_builder, "gotoline_spinbutton"));
+	res := gtk_dialog_run(GTK_DIALOG(dlg));
+	if (res == GTK_RESPONSE_ACCEPT) {
+		line := cast(i32)gtk_spin_button_get_value_as_int(spin);
+		win.scrollToLine(line);
+	}
+	gtk_widget_hide(dlg);
 }
