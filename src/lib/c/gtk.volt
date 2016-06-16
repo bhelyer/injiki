@@ -61,6 +61,14 @@ GtkWidget* GTK_WIDGET(GtkObject* obj) {
 	return ptr;
 }
 
+GtkWindow* GTK_WINDOW(GtkWidget* obj) {
+	ptr := cast(GtkWindow*)obj;
+	if (ptr is null) {
+		throw new Exception("GTK_WINDOW failure");
+	}
+	return ptr;
+}
+
 GtkTextView* GTK_TEXT_VIEW(GtkWidget* obj) {
 	ptr := cast(GtkTextView*)obj;
 	if (ptr is null) {
@@ -89,14 +97,6 @@ GtkFileChooser* GTK_FILE_CHOOSER(GtkWidget* obj) {
 	ptr := cast(GtkFileChooser*)obj;
 	if (ptr is null) {
 		throw new Exception("GTK_FILE_CHOOSER failure");
-	}
-	return ptr;
-}
-
-GtkWindow* GTK_WINDOW(GtkWidget* obj) {
-	ptr := cast(GtkWindow*)obj;
-	if (ptr is null) {
-		throw new Exception("GTK_WINDOW failure");
 	}
 	return ptr;
 }
@@ -140,6 +140,8 @@ void gtk_widget_destroy(GtkWidget*);
 void gtk_main();
 void gtk_main_quit();
 void g_free(gpointer);
+
+void gtk_window_set_title(GtkWindow*, const(gchar)*);
 
 gint gtk_dialog_run(GtkDialog*);
 

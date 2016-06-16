@@ -77,9 +77,15 @@ class Window {
 		gtk_text_buffer_set_text(mGtkBuffer, toStringz(txt), cast(gint)txt.length);
 		gtk_builder_connect_signals(_injiki_gtk_builder, cast(gpointer)this);
 		gtk_widget_show(mWindow);
+		title = "印字機 - " ~ filename;
 	}
 
 	void close() {
+	}
+
+	@property void title(string s) {
+		cstr := toStringz(s);
+		gtk_window_set_title(GTK_WINDOW(mWindow), cstr);
 	}
 
 	protected string mFilename;
