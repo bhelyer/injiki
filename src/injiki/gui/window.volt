@@ -170,10 +170,11 @@ extern(C) void injiki_open_cb(GtkWidget* widget, gpointer userData) {
 extern(C) void injiki_goto_cb(GtkWidget* widget, gpointer userData) {
 	win := getWindow(userData);
 	dlg := GTK_WIDGET(gtk_builder_get_object(_injiki_gtk_builder, "gotoline_dialog"));
-	spin := GTK_SPIN_BUTTON(gtk_builder_get_object(_injiki_gtk_builder, "gotoline_spinbutton"));
+	spin := GTK_WIDGET(gtk_builder_get_object(_injiki_gtk_builder, "gotoline_spinbutton"));
+	gtk_widget_grab_focus(spin);
 	res := gtk_dialog_run(GTK_DIALOG(dlg));
 	if (res == GTK_RESPONSE_ACCEPT) {
-		line := cast(i32)gtk_spin_button_get_value_as_int(spin);
+		line := cast(i32)gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(spin));
 		win.scrollToLine(line);
 	}
 	gtk_widget_hide(dlg);

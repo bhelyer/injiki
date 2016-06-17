@@ -105,7 +105,7 @@ GtkDialog* GTK_DIALOG(GtkObject* obj) {
 	return ptr;
 }
 
-GtkSpinButton* GTK_SPIN_BUTTON(GtkObject* obj) {
+GtkSpinButton* GTK_SPIN_BUTTON(GtkWidget* obj) {
 	ptr := cast(GtkSpinButton*)obj;
 	if (ptr is null) {
 		throw new Exception("GTK_SPIN_BUTTON failure");
@@ -155,9 +155,12 @@ guint gtk_builder_add_from_string(GtkBuilder*, const(gchar)*, gsize, void*);
 GtkObject* gtk_builder_get_object(GtkBuilder*, const(gchar)*);
 void gtk_builder_connect_signals(GtkBuilder*, gpointer);
 void g_object_unref(gpointer);
+
 void gtk_widget_show(GtkWidget*);
 void gtk_widget_hide(GtkWidget*);
 void gtk_widget_destroy(GtkWidget*);
+void gtk_widget_grab_focus(GtkWidget *widget);
+
 void gtk_main();
 void gtk_main_quit();
 void g_free(gpointer);
