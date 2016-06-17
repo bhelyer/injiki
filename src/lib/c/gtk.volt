@@ -178,6 +178,7 @@ GtkTextBuffer* gtk_text_view_get_buffer(GtkTextView*);
 void gtk_text_view_set_monospace(GtkTextView*, gboolean);
 void gtk_text_view_scroll_to_mark (GtkTextView *text_view, GtkTextMark *mark,
 	gdouble within_margin, gboolean use_align, gdouble xalign, gdouble yalign);
+gboolean gtk_text_view_move_mark_onscreen(GtkTextView *text_view, GtkTextMark *mark);
 
 void gtk_text_buffer_set_text(GtkTextBuffer*, const gchar* text, gint len);
 gchar* gtk_text_buffer_get_text(GtkTextBuffer*, GtkTextIter* start, GtkTextIter* end, gboolean showHiddenChars);
