@@ -65,7 +65,7 @@ class Window {
 
 	this() {
 		openWindow();
-		injiki_open_cb(mWindow, cast(void*)this);
+		title = "印字機 - Untitled";
 	}
 
 	bool fileLoaded() {
@@ -156,6 +156,10 @@ extern(C) void injiki_quit_cb(GtkWidget* widget, gpointer userData) {
 
 extern(C) void injiki_save_cb(GtkWidget* widget, gpointer userData) {
 	win := getWindow(userData);
+	if (win.mFilename == "") {
+		injiki_saveas_cb(widget, userData);
+		return;
+	}
 	ofs := new OutputFileStream(win.mFilename);
 	scope(exit) ofs.close();
 	GtkTextIter a, b;
@@ -175,6 +179,30 @@ extern(C) void injiki_open_cb(GtkWidget* widget, gpointer userData) {
 	res := gtk_dialog_run(GTK_DIALOG(dlg));
 	if (res == GTK_RESPONSE_ACCEPT) {
 		char* fname = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg));
+		win.loadFile(toString(fname));
+		g_free(cast(void*)fname);
+	}
+	gtk_widget_destroy(dlg);
+}
+
+extern(C) void injiki_saveas_cb(GtkWidget* widget, gpointer userData) {
+	win := getWindow(userData);
+	act := GTK_FILE_CHOOSER_ACTION_SAVE;
+	savestr := toStringz("_Save");
+	closestr := toStringz("_Cancel");
+	dlg := gtk_file_chooser_dialog_new("Save As", GTK_WINDOW(win.mWindow), act,
+		closestr, GTK_RESPONSE_CANCEL, savestr, GTK_RESPONSE_ACCEPT, null);
+	chooser := GTK_FILE_CHOOSER(dlg);
+	if (win.mFilename == "") {
+		gtk_file_chooser_set_current_name(chooser, "Untitled");
+	} else {
+		gtk_file_chooser_set_filename(chooser, toStringz(win.mFilename));
+	}
+	res := gtk_dialog_run(GTK_DIALOG(dlg));
+	if (res == GTK_RESPONSE_ACCEPT) {
+		char* fname = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg));
+		win.mFilename = toString(fname);
+		injiki_save_cb(widget, userData);
 		win.loadFile(toString(fname));
 		g_free(cast(void*)fname);
 	}

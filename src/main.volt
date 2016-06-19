@@ -16,9 +16,6 @@ i32 main(string[] args) {
 	} else {
 		win = new Window(args[$-1]);
 	}
-	if (!win.fileLoaded()) {
-		return 1;
-	}
 	runGui();
 	return 0;
 }

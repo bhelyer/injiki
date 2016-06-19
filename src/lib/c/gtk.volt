@@ -177,6 +177,8 @@ gint gtk_dialog_run(GtkDialog*);
 GtkWidget* gtk_file_chooser_dialog_new(const(gchar)*, GtkWindow*, 
 	int action, const(gchar)*, ...);
 gchar* gtk_file_chooser_get_filename(GtkFileChooser*);
+void gtk_file_chooser_set_current_name(GtkFileChooser *chooser, const gchar *name);
+gboolean gtk_file_chooser_set_filename(GtkFileChooser *chooser, const char *filename);
 
 GtkCssProvider* gtk_css_provider_new();
 GtkCssProvider* gtk_css_provider_get_default();
