@@ -7,6 +7,7 @@ extern (C):
 alias gint = i32;
 alias guint = u32;
 alias gsize = guint;
+alias guint8 = u8;
 alias guint32 = u32;
 alias gchar = char;
 alias gpointer = void*;
@@ -16,6 +17,7 @@ alias GQuark = guint32;
 
 struct GdkDisplay {}
 struct GdkScreen {}
+struct GdkPixbuf {}
 
 struct GtkObject {}
 struct GtkBuilder {}
@@ -166,6 +168,9 @@ void gtk_main_quit();
 void g_free(gpointer);
 
 void gtk_window_set_title(GtkWindow*, const(gchar)*);
+void gtk_window_set_icon (GtkWindow *window, GdkPixbuf *icon);
+gboolean gtk_window_set_icon_from_file (GtkWindow *window, const gchar *filename,
+	void **err);
 
 gint gtk_dialog_run(GtkDialog*);
 
@@ -197,3 +202,7 @@ GtkTextMark* gtk_text_mark_new(const gchar* name, gboolean left_gravity);
 void gtk_text_iter_set_line(GtkTextIter *iter, gint line_number);
 
 gint gtk_spin_button_get_value_as_int(GtkSpinButton *spin_button);
+
+GdkPixbuf* gdk_pixbuf_new_from_inline (gint data_length, const guint8 *data,
+	gboolean copy_pixels, void **error);
+

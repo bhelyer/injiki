@@ -1,9 +1,0 @@
-#!/bin/sh
-# Without this, about half the time the textview receives no input.
-# It seems to be an issue with GTK talking to ibus, but I have no
-# idea what the solution is. 
-SCRIPT=`realpath $0`
-ARG=`realpath $1`
-SCRIPTPATH=`dirname $SCRIPT`
-export GTK_IM_MODULE=xim
-$SCRIPTPATH/injiki.bin $*

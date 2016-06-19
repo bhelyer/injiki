@@ -59,25 +59,39 @@ void runGui() {
  */
 class Window {
 	this(string filename) {
-		open(filename);
+		openWindow();
+		loadFile(filename);
 	}
 
-	void open(string filename) {
+	this() {
+		openWindow();
+		injiki_open_cb(mWindow, cast(void*)this);
+	}
+
+	bool fileLoaded() {
+		return mFilename != "";
+	}
+
+	void loadFile(string filename) {
 		string txt;
 		if (exists(filename)) {
 			txt = cast(string)read(filename);
 		}
 		mFilename = filename;
+		title = "印字機 - " ~ filename;
+		gtk_text_buffer_set_text(mGtkBuffer, toStringz(txt),
+			cast(gint)txt.length);
+	}
 
-		mWindow = GTK_WIDGET(gtk_builder_get_object(_injiki_gtk_builder, "buffer_window"));
+	void openWindow() {
+		mWindow = GTK_WIDGET(gtk_builder_get_object(_injiki_gtk_builder,
+			"buffer_window"));
 		mTextView = GTK_WIDGET(gtk_builder_get_object(_injiki_gtk_builder,
 			"buffer_textview"));
 		gtk_text_view_set_monospace(GTK_TEXT_VIEW(mTextView), true);
 		mGtkBuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(mTextView));
-		gtk_text_buffer_set_text(mGtkBuffer, toStringz(txt), cast(gint)txt.length);
 		gtk_builder_connect_signals(_injiki_gtk_builder, cast(gpointer)this);
 		gtk_widget_show(mWindow);
-		title = "印字機 - " ~ filename;
 	}
 
 	void close() {
@@ -161,7 +175,7 @@ extern(C) void injiki_open_cb(GtkWidget* widget, gpointer userData) {
 	res := gtk_dialog_run(GTK_DIALOG(dlg));
 	if (res == GTK_RESPONSE_ACCEPT) {
 		char* fname = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg));
-		win.open(toString(fname));
+		win.loadFile(toString(fname));
 		g_free(cast(void*)fname);
 	}
 	gtk_widget_destroy(dlg);
