@@ -171,7 +171,7 @@ extern(C) void injiki_open_cb(GtkWidget* widget, gpointer userData) {
 	openstr := toStringz("_Open");
 	closestr := toStringz("_Cancel");
 	dlg := gtk_file_chooser_dialog_new("Open File", GTK_WINDOW(win.mWindow), act,
-		closestr, GTK_RESPONSE_CANCEL, openstr, GTK_RESPONSE_ACCEPT, cast(void*)null);
+		closestr, GTK_RESPONSE_CANCEL, openstr, GTK_RESPONSE_ACCEPT, null);
 	res := gtk_dialog_run(GTK_DIALOG(dlg));
 	if (res == GTK_RESPONSE_ACCEPT) {
 		char* fname = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg));
