@@ -1,0 +1,10 @@
+--dep
+watt
+-J
+.
+--if-linux
+--Xcc
+-rdynamic
+--if-linux
+--cmd
+pkg-config --libs gtk+-3.0
