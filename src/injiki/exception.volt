@@ -1,6 +1,8 @@
 module injiki.exception;
 
-class InjikiException : object.Exception {
+import core.exception;
+
+class InjikiException : Exception {
 	this(string msg) {
 		super(msg);
 	}

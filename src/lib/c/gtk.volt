@@ -1,6 +1,8 @@
 module lib.c.gtk;
 extern (C):
 
+import core.exception;
+
 /* Bind only as much GTK as injiki needs.
  */
 
