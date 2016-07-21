@@ -1,6 +1,7 @@
 module injiki.gui.window;
 
 import watt.conv;
+import watt.path;
 import watt.io.file;
 import watt.io.streams;
 
@@ -176,6 +177,8 @@ extern(C) void injiki_open_cb(GtkWidget* widget, gpointer userData) {
 	closestr := toStringz("_Cancel");
 	dlg := gtk_file_chooser_dialog_new("Open File", GTK_WINDOW(win.mWindow), act,
 		closestr, GTK_RESPONSE_CANCEL, openstr, GTK_RESPONSE_ACCEPT, null);
+	gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dlg),
+		toStringz(dirName(fullPath(win.mFilename))));
 	res := gtk_dialog_run(GTK_DIALOG(dlg));
 	if (res == GTK_RESPONSE_ACCEPT) {
 		char* fname = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg));
