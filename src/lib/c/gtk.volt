@@ -39,29 +39,29 @@ struct GtkFileChooserDialog {}
 struct GtkSpinButton {}
 
 struct GtkTextIter {
-	gpointer dummy1;
-	gpointer dummy2;
-	gint dummy3;
-	gint dummy4;
-	gint dummy5;
-	gint dummy6;
-	gint dummy7;
-	gint dummy8;
-	gpointer dummy9;
-	gpointer dummy10;
-	gint dummy11;
-	gint dummy12;
-	gint dummy13;
-	gpointer dummy14;
+	dummy1: gpointer;
+	dummy2: gpointer;
+	dummy3: gint;
+	dummy4: gint;
+	dummy5: gint;
+	dummy6: gint;
+	dummy7: gint;
+	dummy8: gint;
+	dummy9: gpointer;
+	dummy10: gpointer;
+	dummy11: gint;
+	dummy12: gint;
+	dummy13: gint;
+	dummy14: gpointer;
 }
 
 struct GtkError {
-	GQuark domain;
-	gint code;
-	gchar* message;
+	domain: GQuark;
+	code: gint;
+	message: gchar*;
 }
 
-GtkWidget* GTK_WIDGET(GtkObject* obj) {
+fn GTK_WIDGET(obj: GtkObject*) GtkWidget* {
 	ptr := cast(GtkWidget*)obj;
 	if (ptr is null) {
 		throw new Exception("GTK_WIDGET failure");
@@ -69,7 +69,7 @@ GtkWidget* GTK_WIDGET(GtkObject* obj) {
 	return ptr;
 }
 
-GtkWindow* GTK_WINDOW(GtkWidget* obj) {
+fn GTK_WINDOW(obj: GtkWidget*) GtkWindow* {
 	ptr := cast(GtkWindow*)obj;
 	if (ptr is null) {
 		throw new Exception("GTK_WINDOW failure");
@@ -77,7 +77,7 @@ GtkWindow* GTK_WINDOW(GtkWidget* obj) {
 	return ptr;
 }
 
-GtkTextView* GTK_TEXT_VIEW(GtkWidget* obj) {
+fn GTK_TEXT_VIEW(obj: GtkWidget*) GtkTextView* {
 	ptr := cast(GtkTextView*)obj;
 	if (ptr is null) {
 		throw new Exception("GTK_TEXT_VIEW failure");
@@ -85,7 +85,7 @@ GtkTextView* GTK_TEXT_VIEW(GtkWidget* obj) {
 	return ptr;
 }
 
-GtkStyleProvider* GTK_STYLE_PROVIDER(GtkCssProvider* obj) {
+fn GTK_STYLE_PROVIDER(obj: GtkCssProvider*) GtkStyleProvider* {
 	ptr := cast(GtkStyleProvider*)obj;
 	if (ptr is null) {
 		throw new Exception("GTK_STYLE_PROVIDER failure");
@@ -93,7 +93,7 @@ GtkStyleProvider* GTK_STYLE_PROVIDER(GtkCssProvider* obj) {
 	return ptr;
 }
 
-GtkDialog* GTK_DIALOG(GtkWidget* obj) {
+fn GTK_DIALOG(obj: GtkWidget*) GtkDialog* {
 	ptr := cast(GtkDialog*)obj;
 	if (ptr is null) {
 		throw new Exception("GTK_DIALOG failure");
@@ -101,7 +101,7 @@ GtkDialog* GTK_DIALOG(GtkWidget* obj) {
 	return ptr;
 }
 
-GtkDialog* GTK_DIALOG(GtkObject* obj) {
+fn GTK_DIALOG(obj: GtkObject*) GtkDialog* {
 	ptr := cast(GtkDialog*)obj;
 	if (ptr is null) {
 		throw new Exception("GTK_DIALOG failure");
@@ -109,7 +109,7 @@ GtkDialog* GTK_DIALOG(GtkObject* obj) {
 	return ptr;
 }
 
-GtkSpinButton* GTK_SPIN_BUTTON(GtkWidget* obj) {
+fn GTK_SPIN_BUTTON(obj: GtkWidget*) GtkSpinButton* {
 	ptr := cast(GtkSpinButton*)obj;
 	if (ptr is null) {
 		throw new Exception("GTK_SPIN_BUTTON failure");
@@ -117,7 +117,7 @@ GtkSpinButton* GTK_SPIN_BUTTON(GtkWidget* obj) {
 	return ptr;
 }
 
-GtkFileChooser* GTK_FILE_CHOOSER(GtkWidget* obj) {
+fn GTK_FILE_CHOOSER(obj: GtkWidget*) GtkFileChooser* {
 	ptr := cast(GtkFileChooser*)obj;
 	if (ptr is null) {
 		throw new Exception("GTK_FILE_CHOOSER failure");
@@ -148,66 +148,63 @@ enum {
 	GTK_RESPONSE_HELP = -11
 }
 
-GdkDisplay* gdk_display_get_default();
-GdkScreen* gdk_display_get_default_screen(GdkDisplay*);
-void gtk_style_context_add_provider_for_screen(GdkScreen*, GtkStyleProvider*, guint);
+fn gdk_display_get_default() GdkDisplay*;
+fn gdk_display_get_default_screen(GdkDisplay*) GdkScreen*;
+fn gtk_style_context_add_provider_for_screen(GdkScreen*, GtkStyleProvider*, guint);
 
-void gtk_init(int* argc, char*** argv);
-GtkBuilder* gtk_builder_new();
-guint gtk_builder_add_from_file(GtkBuilder*, const(gchar)*, GtkError*);
-guint gtk_builder_add_from_string(GtkBuilder*, const(gchar)*, gsize, void*);
-GtkObject* gtk_builder_get_object(GtkBuilder*, const(gchar)*);
-void gtk_builder_connect_signals(GtkBuilder*, gpointer);
-void g_object_unref(gpointer);
+fn gtk_init(int*, char***);
+fn gtk_builder_new() GtkBuilder*;
+fn gtk_builder_add_from_file(GtkBuilder*, const(gchar)*, GtkError*) guint;
+fn gtk_builder_add_from_string(GtkBuilder*, const(gchar)*, gsize, void*) guint;
+fn gtk_builder_get_object(GtkBuilder*, const(gchar)*) GtkObject*;
+fn gtk_builder_connect_signals(GtkBuilder*, gpointer);
+fn g_object_unref(gpointer);
 
-void gtk_widget_show(GtkWidget*);
-void gtk_widget_hide(GtkWidget*);
-void gtk_widget_destroy(GtkWidget*);
-void gtk_widget_grab_focus(GtkWidget *widget);
+fn gtk_widget_show(GtkWidget*);
+fn gtk_widget_hide(GtkWidget*);
+fn gtk_widget_destroy(GtkWidget*);
+fn gtk_widget_grab_focus(GtkWidget *);
 
-void gtk_main();
-void gtk_main_quit();
-void g_free(gpointer);
+fn gtk_main();
+fn gtk_main_quit();
+fn g_free(gpointer);
 
-void gtk_window_set_title(GtkWindow*, const(gchar)*);
-void gtk_window_set_icon (GtkWindow *window, GdkPixbuf *icon);
-gboolean gtk_window_set_icon_from_file (GtkWindow *window, const gchar *filename,
-	void **err);
+fn gtk_window_set_title(GtkWindow*, const(gchar)*);
+fn gtk_window_set_icon (GtkWindow *, GdkPixbuf *);
+fn gtk_window_set_icon_from_file (GtkWindow *, const gchar *, void **) gboolean;
 
-gint gtk_dialog_run(GtkDialog*);
+fn gtk_dialog_run(GtkDialog*) gint;
 
-GtkWidget* gtk_file_chooser_dialog_new(const(gchar)*, GtkWindow*, 
-	int action, const(gchar)*, ...);
-gchar* gtk_file_chooser_get_filename(GtkFileChooser*);
-void gtk_file_chooser_set_current_name(GtkFileChooser *chooser, const gchar *name);
-gboolean gtk_file_chooser_set_filename(GtkFileChooser *chooser, const char *filename);
-gboolean gtk_file_chooser_set_current_folder(GtkFileChooser *chooser, const gchar *name);
+fn gtk_file_chooser_dialog_new(const(gchar)*, GtkWindow*, i32, const(gchar)*, ...) GtkWidget*;
+fn gtk_file_chooser_get_filename(GtkFileChooser*) gchar*;
+fn gtk_file_chooser_set_current_name(GtkFileChooser *, const gchar *);
+fn gtk_file_chooser_set_filename(GtkFileChooser *, const char *) gboolean;
+fn gtk_file_chooser_set_current_folder(GtkFileChooser *, const gchar *) gboolean;
 
-GtkCssProvider* gtk_css_provider_new();
-GtkCssProvider* gtk_css_provider_get_default();
-gboolean gtk_css_provider_load_from_data(GtkCssProvider*, const(gchar)*, int, void*);
+fn gtk_css_provider_new() GtkCssProvider*;
+fn gtk_css_provider_get_default() GtkCssProvider*;
+fn gtk_css_provider_load_from_data(GtkCssProvider*, const(gchar)*, i32, void*) gboolean;
 
-GtkTextBuffer* gtk_text_view_get_buffer(GtkTextView*);
-void gtk_text_view_set_monospace(GtkTextView*, gboolean);
-void gtk_text_view_scroll_to_mark (GtkTextView *text_view, GtkTextMark *mark,
-	gdouble within_margin, gboolean use_align, gdouble xalign, gdouble yalign);
-gboolean gtk_text_view_move_mark_onscreen(GtkTextView *text_view, GtkTextMark *mark);
+fn gtk_text_view_get_buffer(GtkTextView*) GtkTextBuffer*;
+fn gtk_text_view_set_monospace(GtkTextView*, gboolean);
+fn gtk_text_view_scroll_to_mark (GtkTextView *, GtkTextMark *,
+	gdouble, gboolean, gdouble, gdouble) GtkTextBuffer*;
+fn gtk_text_view_move_mark_onscreen(GtkTextView *, GtkTextMark *) gboolean;
 
-void gtk_text_buffer_set_text(GtkTextBuffer*, const gchar* text, gint len);
-gchar* gtk_text_buffer_get_text(GtkTextBuffer*, GtkTextIter* start, GtkTextIter* end, gboolean showHiddenChars);
-void gtk_text_buffer_get_bounds(GtkTextBuffer*, GtkTextIter* start, GtkTextIter* end);
-void gtk_text_buffer_get_iter_at_line_offset(GtkTextBuffer *buffer, GtkTextIter *iter, gint line_number, gint char_offset);
-gint gtk_text_buffer_get_line_count(GtkTextBuffer *buffer);
-void gtk_text_buffer_add_mark(GtkTextBuffer *buffer, GtkTextMark *mark, const GtkTextIter *where);
-void gtk_text_buffer_delete_mark(GtkTextBuffer *buffer, GtkTextMark *mark);
-void gtk_text_buffer_place_cursor (GtkTextBuffer *buffer, const GtkTextIter *where);
+fn gtk_text_buffer_set_text(GtkTextBuffer*, const gchar*, gint);
+fn gtk_text_buffer_get_text(GtkTextBuffer*, GtkTextIter*, GtkTextIter*, gboolean) gchar*;
+fn gtk_text_buffer_get_bounds(GtkTextBuffer*, GtkTextIter*, GtkTextIter*);
+fn gtk_text_buffer_get_iter_at_line_offset(GtkTextBuffer *, GtkTextIter *, gint, gint);
+fn gtk_text_buffer_get_line_count(GtkTextBuffer *) gint;
+fn gtk_text_buffer_add_mark(GtkTextBuffer *, GtkTextMark *, const GtkTextIter *);
+fn gtk_text_buffer_delete_mark(GtkTextBuffer *, GtkTextMark *);
+fn gtk_text_buffer_place_cursor (GtkTextBuffer *, const GtkTextIter *);
 
-GtkTextMark* gtk_text_mark_new(const gchar* name, gboolean left_gravity);
+fn gtk_text_mark_new(const gchar*, gboolean) GtkTextMark*;
 
-void gtk_text_iter_set_line(GtkTextIter *iter, gint line_number);
+fn gtk_text_iter_set_line(GtkTextIter *, gint);
 
-gint gtk_spin_button_get_value_as_int(GtkSpinButton *spin_button);
+fn gtk_spin_button_get_value_as_int(GtkSpinButton *) gint;
 
-GdkPixbuf* gdk_pixbuf_new_from_inline (gint data_length, const guint8 *data,
-	gboolean copy_pixels, void **error);
+fn gdk_pixbuf_new_from_inline (gint, const guint8 *, gboolean, void **) GdkPixbuf*;
 

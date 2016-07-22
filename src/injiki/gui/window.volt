@@ -9,13 +9,13 @@ import lib.c.gtk;
 
 import injiki.exception;
 
-global string GLADE = import("injiki.glade");
+global GLADE := import("injiki.glade");
 // GTK <3.20 == GtkTextView, Gtk >= 3.20 == textview
 enum CSS = "GtkTextView, textview {
 	font-family: monospace;
 }";
 
-global GtkBuilder* _injiki_gtk_builder;
+global _injiki_gtk_builder :  GtkBuilder*;
 
 /**
  * Initialise anything not specific to a Window.
@@ -33,7 +33,7 @@ global ~this() {
 	g_object_unref(cast(gpointer)_injiki_gtk_builder);
 }
 
-void loadCSS(string s) {
+fn loadCSS(s: string) {
 	str := toStringz(s);
 	provider := gtk_css_provider_new();
 	display := gdk_display_get_default();
@@ -49,7 +49,7 @@ void loadCSS(string s) {
  * Once you've created the Windows you want initially, run this.
  * It'll run until the user quits the GUI.
  */
-void runGui() {
+fn runGui() {
 	gtk_main();
 }
 
@@ -59,7 +59,7 @@ void runGui() {
  * created.
  */
 class Window {
-	this(string filename) {
+	this(filename: string) {
 		openWindow();
 		loadFile(filename);
 	}
@@ -69,12 +69,12 @@ class Window {
 		title = "印字機 - Untitled";
 	}
 
-	bool fileLoaded() {
+	fn fileLoaded() bool {
 		return mFilename != "";
 	}
 
-	void loadFile(string filename) {
-		string txt;
+	fn loadFile(filename: string) {
+		txt: string;
 		if (exists(filename)) {
 			txt = cast(string)read(filename);
 		}
@@ -84,7 +84,7 @@ class Window {
 			cast(gint)txt.length);
 	}
 
-	void openWindow() {
+	fn openWindow() {
 		mWindow = GTK_WIDGET(gtk_builder_get_object(_injiki_gtk_builder,
 			"buffer_window"));
 		mTextView = GTK_WIDGET(gtk_builder_get_object(_injiki_gtk_builder,
@@ -95,7 +95,7 @@ class Window {
 		gtk_widget_show(mWindow);
 	}
 
-	void close() {
+	fn close() {
 	}
 
 	/**
@@ -104,9 +104,9 @@ class Window {
 	 * If given line is greater or equal to the number of lines, it will
 	 * scroll to the last line.
 	 */
-	void scrollToLine(int line) {
+	fn scrollToLine(line: i32) {
 		line--;  // Buffer counts from zero, humans from one.
-		i32 lineCount = gtk_text_buffer_get_line_count(mGtkBuffer);
+		lineCount: i32 = gtk_text_buffer_get_line_count(mGtkBuffer);
 		if (line >= lineCount) {
 			line = lineCount - 1;
 		}
@@ -114,7 +114,7 @@ class Window {
 			line = 0;
 		}
 		tv := GTK_TEXT_VIEW(mTextView);
-		GtkTextIter iter;
+		iter: GtkTextIter;
 		gtk_text_buffer_get_iter_at_line_offset(mGtkBuffer,
 			&iter, line, 0);
 		scroll2mark := gtk_text_mark_new(null, false);
@@ -127,23 +127,23 @@ class Window {
 	/**
 	 * Set the window title.
 	 */
-	@property void title(string s) {
+	@property fn title(s: string) {
 		cstr := toStringz(s);
 		gtk_window_set_title(GTK_WINDOW(mWindow), cstr);
 	}
 
-	protected string mFilename;
+	protected mFilename: string;
 
-	protected GtkWidget* mWindow;
-	protected GtkWidget* mTextView;
-	protected GtkTextBuffer* mGtkBuffer;
+	protected mWindow: GtkWidget*;
+	protected mTextView: GtkWidget*;
+	protected mGtkBuffer: GtkTextBuffer*;
 }
 
 /*
  * Callbacks beyond this point.
  */
 
-Window getWindow(gpointer ptr) {
+fn getWindow(ptr: gpointer) Window {
 	win := cast(Window)ptr;
 	if (win is null) {
 		throw new InjikiException("failed to retrieve window in callback");
@@ -151,11 +151,11 @@ Window getWindow(gpointer ptr) {
 	return win;
 }
 
-extern(C) void injiki_quit_cb(GtkWidget* widget, gpointer userData) {
+extern(C) fn injiki_quit_cb(widget: GtkWidget*, userData: gpointer) {
 	gtk_main_quit();
 }
 
-extern(C) void injiki_save_cb(GtkWidget* widget, gpointer userData) {
+extern(C) fn injiki_save_cb(widget: GtkWidget*, userData: gpointer) {
 	win := getWindow(userData);
 	if (win.mFilename == "") {
 		injiki_saveas_cb(widget, userData);
@@ -163,14 +163,14 @@ extern(C) void injiki_save_cb(GtkWidget* widget, gpointer userData) {
 	}
 	ofs := new OutputFileStream(win.mFilename);
 	scope(exit) ofs.close();
-	GtkTextIter a, b;
+	a, b: GtkTextIter;
 	gtk_text_buffer_get_bounds(win.mGtkBuffer, &a, &b);
-	const(char)* str = gtk_text_buffer_get_text(win.mGtkBuffer, &a, &b, false);
+	str: const(char)* = gtk_text_buffer_get_text(win.mGtkBuffer, &a, &b, false);
 	ofs.write(toString(str));
 	g_free(cast(void*)str);
 }
 
-extern(C) void injiki_open_cb(GtkWidget* widget, gpointer userData) {
+extern(C) fn injiki_open_cb(widget: GtkWidget*, userData: gpointer) {
 	win := getWindow(userData);
 	act := GTK_FILE_CHOOSER_ACTION_OPEN;
 	openstr := toStringz("_Open");
@@ -182,21 +182,21 @@ extern(C) void injiki_open_cb(GtkWidget* widget, gpointer userData) {
 	if (win.mFilename != "") {
 		startPath = dirName(fullPath(win.mFilename));
 	} else {
-		startPath = getExecDir();
+		startPath = getExecDir();  // TODO: getcwd
 	}
 
 	gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(dlg),
 		toStringz(startPath));
 	res := gtk_dialog_run(GTK_DIALOG(dlg));
 	if (res == GTK_RESPONSE_ACCEPT) {
-		char* fname = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg));
+		fname: char* = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg));
 		win.loadFile(toString(fname));
 		g_free(cast(void*)fname);
 	}
 	gtk_widget_destroy(dlg);
 }
 
-extern(C) void injiki_saveas_cb(GtkWidget* widget, gpointer userData) {
+extern(C) fn injiki_saveas_cb(widget: GtkWidget*, userData: gpointer) {
 	win := getWindow(userData);
 	act := GTK_FILE_CHOOSER_ACTION_SAVE;
 	savestr := toStringz("_Save");
@@ -211,7 +211,7 @@ extern(C) void injiki_saveas_cb(GtkWidget* widget, gpointer userData) {
 	}
 	res := gtk_dialog_run(GTK_DIALOG(dlg));
 	if (res == GTK_RESPONSE_ACCEPT) {
-		char* fname = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg));
+		fname: char* = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dlg));
 		win.mFilename = toString(fname);
 		injiki_save_cb(widget, userData);
 		win.loadFile(toString(fname));
@@ -220,7 +220,7 @@ extern(C) void injiki_saveas_cb(GtkWidget* widget, gpointer userData) {
 	gtk_widget_destroy(dlg);
 }
 
-extern(C) void injiki_goto_cb(GtkWidget* widget, gpointer userData) {
+extern(C) fn injiki_goto_cb(widget: GtkWidget*, userData: gpointer) {
 	win := getWindow(userData);
 	dlg := GTK_WIDGET(gtk_builder_get_object(_injiki_gtk_builder, "gotoline_dialog"));
 	spin := GTK_WIDGET(gtk_builder_get_object(_injiki_gtk_builder, "gotoline_spinbutton"));
