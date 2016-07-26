@@ -11,9 +11,13 @@ import injiki.exception;
 
 global GLADE := import("injiki.glade");
 // GTK <3.20 == GtkTextView, Gtk >= 3.20 == textview
-enum CSS = "GtkTextView, textview {
+enum CSS =
+"
+GtkTextView, textview {
 	font-family: monospace;
-}";
+	font: DejaVu Sans Mono Bold 9;
+}
+";
 
 global _injiki_gtk_builder :  GtkBuilder*;
 
@@ -55,8 +59,6 @@ fn runGui() {
 
 /**
  * Represents a Window that displays text.
- * Eventually, multiple of these should be able to be
- * created.
  */
 class Window {
 	this(filename: string) {
@@ -91,11 +93,28 @@ class Window {
 			"buffer_textview"));
 		gtk_text_view_set_monospace(GTK_TEXT_VIEW(mTextView), true);
 		mGtkBuffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(mTextView));
+		setupTags();
 		gtk_builder_connect_signals(_injiki_gtk_builder, cast(gpointer)this);
 		gtk_widget_show(mWindow);
 	}
 
 	fn close() {
+	}
+
+	private fn setupTags() {
+		assert(mGtkBuffer !is null);
+		gtk_text_buffer_create_tag(mGtkBuffer, "current_line".ptr, "background".ptr, "lightgrey".ptr, null);
+	}
+
+	fn highlightLine(line: i32) {
+		GtkTextIter startLine, endLine, startBuffer, endBuffer;
+		gtk_text_buffer_get_iter_at_offset(mGtkBuffer, &startBuffer, 0);
+		gtk_text_buffer_get_iter_at_offset(mGtkBuffer, &endBuffer, -1);
+		gtk_text_buffer_remove_tag_by_name(mGtkBuffer, "current_line", &startBuffer, &endBuffer);
+
+		gtk_text_buffer_get_iter_at_line(mGtkBuffer, &startLine, line);
+		gtk_text_buffer_get_iter_at_line(mGtkBuffer, &endLine, line + 1);
+		gtk_text_buffer_apply_tag_by_name(mGtkBuffer, "current_line", &startLine, &endLine);
 	}
 
 	/**
@@ -122,6 +141,7 @@ class Window {
 		gtk_text_view_scroll_to_mark(tv, scroll2mark, 0.0, true, 0.0, 0.17);
 		gtk_text_buffer_place_cursor(mGtkBuffer, &iter);
 		gtk_text_buffer_delete_mark(mGtkBuffer, scroll2mark);
+		highlightLine(line);
 	}
 
 	/**

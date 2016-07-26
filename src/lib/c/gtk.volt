@@ -31,6 +31,7 @@ struct GtkStyleProvider {}
 struct GtkTextView {}
 struct GtkTextBuffer {}
 struct GtkTextMark {}
+struct GtkTextTag {}
 
 struct GtkDialog {}
 struct GtkFileChooser {}
@@ -190,15 +191,19 @@ fn gtk_text_view_set_monospace(GtkTextView*, gboolean);
 fn gtk_text_view_scroll_to_mark (GtkTextView *, GtkTextMark *,
 	gdouble, gboolean, gdouble, gdouble) GtkTextBuffer*;
 fn gtk_text_view_move_mark_onscreen(GtkTextView *, GtkTextMark *) gboolean;
-
 fn gtk_text_buffer_set_text(GtkTextBuffer*, const gchar*, gint);
 fn gtk_text_buffer_get_text(GtkTextBuffer*, GtkTextIter*, GtkTextIter*, gboolean) gchar*;
 fn gtk_text_buffer_get_bounds(GtkTextBuffer*, GtkTextIter*, GtkTextIter*);
 fn gtk_text_buffer_get_iter_at_line_offset(GtkTextBuffer *, GtkTextIter *, gint, gint);
+fn gtk_text_buffer_get_iter_at_offset(GtkTextBuffer*, GtkTextIter*, gint);
+fn gtk_text_buffer_get_iter_at_line(GtkTextBuffer*, GtkTextIter*, gint);
 fn gtk_text_buffer_get_line_count(GtkTextBuffer *) gint;
 fn gtk_text_buffer_add_mark(GtkTextBuffer *, GtkTextMark *, const GtkTextIter *);
 fn gtk_text_buffer_delete_mark(GtkTextBuffer *, GtkTextMark *);
 fn gtk_text_buffer_place_cursor (GtkTextBuffer *, const GtkTextIter *);
+fn gtk_text_buffer_create_tag(GtkTextBuffer*, const(gchar)*, const(gchar)*, ...) GtkTextTag*;
+fn gtk_text_buffer_apply_tag_by_name(GtkTextBuffer*, const(gchar)*, GtkTextIter*, GtkTextIter*);
+fn gtk_text_buffer_remove_tag_by_name(GtkTextBuffer*, const(gchar)*, GtkTextIter*, GtkTextIter*);
 
 fn gtk_text_mark_new(const gchar*, gboolean) GtkTextMark*;
 
