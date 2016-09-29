@@ -5,6 +5,7 @@
  */
 module injiki.text.buffer;
 
+import watt.io;
 import watt.text.utf;
 
 /**
@@ -21,17 +22,40 @@ class Buffer {
 	/// Initialises an empty buffer, ready for insertion.
 	this() {
 		mBuffer = new char[](HOLESIZE);
-		mPoint = mBuffer.ptr;
+		mPoint = 0;
 		mHole = mBuffer;
+		mHoleIndex = 0;
 	}
 
 	/// Return the character at the point.
 	fn rc() dchar {
-		return 'A';
+		if (mPoint == mHoleIndex) {
+			mPoint = mHoleIndex + mHole.length;
+		}
+		i: size_t = 0;
+		c := decode(cast(string)mBuffer[mPoint .. $], ref i);
+		return c;
 	}
 
 	/// Write a character at the point.
 	fn wc(c: dchar) {
+		fn dgt(s: scope const(char)[]) {
+			if (mPoint >= mBuffer.length) {
+				expand(s.length);
+				mHole = mHole[0 .. $-s.length];
+			}
+			mPoint -= s.length;
+			originalPoint := mPoint;
+			for (i: size_t = 0; i < s.length; ++i) {
+				writeOne(s[i]);
+				mPoint++;
+			}
+			mPoint = originalPoint;
+		}
+		if (mPoint == mHoleIndex) {
+			mPoint = mHoleIndex + mHole.length;
+		}
+		encode(dgt, c);
 	}
 
 	/// Return the character at the point and advance it.
@@ -57,7 +81,7 @@ class Buffer {
 
 	/// Return the number of characters in the file.
 	fn size() size_t {
-		return 0;
+		return mBuffer.length - mHole.length;
 	}
 
 	/// Returns true if we're at the end of file.
@@ -79,7 +103,19 @@ class Buffer {
 		return 0;
 	}
 
-	private mBuffer: char[];  //< The entire block of memory.
-	private mHole:   char[];  //< Where text is inserted. A slice of mBuffer. 
-	private mPoint:  char*;   //< Insertion point.
+	/// Make the buffer at least s bytes larger.
+	private fn expand(s: size_t) {
+	}
+
+	/// Write a single ASCII character at the point.
+	private fn writeOne(c: char) {
+		mBuffer[mPoint] = c;
+		mChanged = true;
+	}
+
+	private mBuffer:    char[];  //< The entire block of memory.
+	private mHole:      char[];  //< Where text is inserted. A slice of mBuffer.
+	private mHoleIndex: size_t;  //< Where the hole starts in the buffer.
+	private mPoint:     size_t;  //< Insertion point.
+	private mChanged:   bool;    //< Set when the buffer has been changed.
 }
