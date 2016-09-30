@@ -98,6 +98,15 @@ class Buffer {
 
 	/// Shrink the hole by n bytes. Grow buffer if needed.
 	fn expand(n: size_t) {
+		if (mHoleSize < n) {
+			newBuffer := new char[](mBuffer.length + HOLESIZE);
+			newBuffer[0 .. mHoleIndex] = mBuffer[0 .. mHoleIndex];
+			oldHoleEnd := mHoleIndex+mHoleSize;
+			mHoleSize += HOLESIZE;
+			holeEnd := mHoleIndex+mHoleSize;
+			newBuffer[holeEnd .. holeEnd + mBuffer.length - oldHoleEnd] = mBuffer[oldHoleEnd .. $];
+			mBuffer = newBuffer;
+		}
 		mHoleIndex += n;
 		mHoleSize -= n;
 	}
