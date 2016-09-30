@@ -96,8 +96,13 @@ class Buffer {
 		return 0;
 	}
 
+	/// Set the point to i. Not checked, may jump into the middle of a codepoint, etc.
+	fn seek(i: size_t) {
+		mPoint = i;
+	}
+
 	/// Shrink the hole by n bytes. Grow buffer if needed.
-	fn expand(n: size_t) {
+	private fn expand(n: size_t) {
 		if (mHoleSize < n) {
 			newBuffer := new char[](mBuffer.length + HOLESIZE);
 			newBuffer[0 .. mHoleIndex] = mBuffer[0 .. mHoleIndex];
@@ -109,10 +114,6 @@ class Buffer {
 		}
 		mHoleIndex += n;
 		mHoleSize -= n;
-	}
-
-	fn seek(i: size_t) {
-		mPoint = i;
 	}
 
 	private mBuffer:    char[];  //< The entire block of memory.
