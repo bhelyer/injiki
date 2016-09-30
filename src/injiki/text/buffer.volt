@@ -1,4 +1,4 @@
-/* The code in this module was loosely adapted from the post
+/* The code in this module was (loosely) adapted from the post
  * from Joseph H Allen on the comp.editors newsgroup, posted
  * September 10th, 1989.
  * "Do whatever you want with this but leave my name on it"
@@ -29,42 +29,33 @@ class Buffer {
 
 	/// Return the character at the point.
 	fn rc() dchar {
-		if (mPoint == mHoleIndex) {
-			mPoint = mHoleIndex + mHole.length;
-		}
-		i: size_t = 0;
-		c := decode(cast(string)mBuffer[mPoint .. $], ref i);
-		return c;
+		i: size_t;
+		return decode(cast(string)mBuffer[mPoint .. $], ref i);
 	}
 
 	/// Write a character at the point.
 	fn wc(c: dchar) {
 		fn dgt(s: scope const(char)[]) {
-			if (mPoint >= mBuffer.length) {
-				expand(s.length);
-				mHole = mHole[0 .. $-s.length];
-			}
-			mPoint -= s.length;
-			originalPoint := mPoint;
+			expand(s.length);
 			for (i: size_t = 0; i < s.length; ++i) {
-				writeOne(s[i]);
-				mPoint++;
+				mBuffer[i + mPoint] = s[i];
 			}
-			mPoint = originalPoint;
-		}
-		if (mPoint == mHoleIndex) {
-			mPoint = mHoleIndex + mHole.length;
 		}
 		encode(dgt, c);
 	}
 
 	/// Return the character at the point and advance it.
 	fn getc() dchar {
-		return 'A';
+		i: size_t;
+		c := decode(cast(string)mBuffer[mPoint .. $], ref i);
+		mPoint += i;
+		return c;
 	}
 
 	/// Write a character at the point and advance it.
 	fn putc(c: dchar) {
+		wc(c);
+		getc();
 	}
 
 	/// Insert a character at the point.
@@ -81,16 +72,12 @@ class Buffer {
 
 	/// Return the number of characters in the file.
 	fn size() size_t {
-		return mBuffer.length - mHole.length;
+		return 0;
 	}
 
 	/// Returns true if we're at the end of file.
 	fn eof() bool {
 		return false;
-	}
-
-	/// Set the point to n characters from the beginning of the file.
-	fn point(n: size_t) {
 	}
 
 	/// Returns 0 if the string matches the one under the point.
@@ -103,14 +90,13 @@ class Buffer {
 		return 0;
 	}
 
-	/// Make the buffer at least s bytes larger.
-	private fn expand(s: size_t) {
+	/// Shrink the hole by n bytes. Grow buffer if needed.
+	fn expand(n: size_t) {
+		mHoleIndex += n;
 	}
 
-	/// Write a single ASCII character at the point.
-	private fn writeOne(c: char) {
-		mBuffer[mPoint] = c;
-		mChanged = true;
+	fn seek(i: size_t) {
+		mPoint = i;
 	}
 
 	private mBuffer:    char[];  //< The entire block of memory.

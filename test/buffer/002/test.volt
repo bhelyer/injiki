@@ -6,21 +6,25 @@ import injiki.text.buffer;
 fn main() i32
 {
 	buf := new Buffer();
-	buf.wc('A');
-	if (buf.rc() != 'A') {
+
+	buf.putc('A');
+	buf.putc('B');
+	buf.putc('ひ');
+	buf.putc('日');
+
+	buf.seek(0);
+	if (buf.getc() != 'A') {
 		return 1;
 	}
-	buf.wc('B');
-	if (buf.rc() != 'B') {
+	if (buf.getc() != 'B') {
 		return 2;
 	}
-	buf.wc('ひ');
-	if (buf.rc() != 'ひ') {
+	if (buf.getc() != 'ひ') {
 		return 3;
 	}
-	buf.wc('日');
-	if (buf.rc() != '日') {
+	if (buf.getc() != '日') {
 		return 4;
 	}
+
 	return 0;
 }
