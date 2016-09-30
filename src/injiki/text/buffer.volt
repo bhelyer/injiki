@@ -23,8 +23,8 @@ class Buffer {
 	this() {
 		mBuffer = new char[](HOLESIZE);
 		mPoint = 0;
-		mHole = mBuffer;
 		mHoleIndex = 0;
+		mHoleSize = mBuffer.length;
 	}
 
 	/// Return the character at the point.
@@ -99,6 +99,7 @@ class Buffer {
 	/// Shrink the hole by n bytes. Grow buffer if needed.
 	fn expand(n: size_t) {
 		mHoleIndex += n;
+		mHoleSize -= n;
 	}
 
 	fn seek(i: size_t) {
@@ -106,8 +107,8 @@ class Buffer {
 	}
 
 	private mBuffer:    char[];  //< The entire block of memory.
-	private mHole:      char[];  //< Where text is inserted. A slice of mBuffer.
 	private mHoleIndex: size_t;  //< Where the hole starts in the buffer.
+	private mHoleSize:  size_t;  //< How many bytes long the hole is.
 	private mPoint:     size_t;  //< Insertion point.
 	private mChanged:   bool;    //< Set when the buffer has been changed.
 }
