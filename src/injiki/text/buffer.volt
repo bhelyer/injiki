@@ -54,8 +54,14 @@ class Buffer {
 
 	/// Write a character at the point and advance it.
 	fn putc(c: dchar) {
-		wc(c);
-		getc();
+		fn dgt(s: scope const(char)[]) {
+			expand(s.length);
+			for (i: size_t = 0; i < s.length; ++i) {
+				mBuffer[i + mPoint] = s[i];
+			}
+			mPoint += s.length;
+		}
+		encode(dgt, c);
 	}
 
 	/// Insert a character at the point.
