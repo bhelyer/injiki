@@ -39,7 +39,6 @@ class Buffer {
 	fn wc(c: dchar) {
 		newSize := utf8bytes(c);
 		existingSize := utf8bytes(rc());
-q
 		moveHole(mPoint);
 
 		if (newSize < existingSize) {
