@@ -12,9 +12,9 @@ fn main() i32
 	buf.putc('B');
 	buf.putc('ひ');
 	buf.putc('日');
-	buf.seek(1);
+	buf.seekRaw(1);
 	buf.wc('雨');
-	buf.seek(0);
+	buf.seekRaw(0);
 	if (buf.getc() != 'A') {
 		return 1;
 	}

@@ -128,7 +128,7 @@ class Buffer {
 	}
 
 	/// Set the point to i. Not checked, may jump into the middle of a codepoint, etc.
-	fn seek(i: size_t) {
+	fn seekRaw(i: size_t) {
 		mPoint = i;
 	}
 

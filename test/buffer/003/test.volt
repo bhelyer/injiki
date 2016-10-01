@@ -15,7 +15,7 @@ fn main() i32
 		buf.putc('日');
 	}
 
-	buf.seek(0);
+	buf.seekRaw(0);
 	if (buf.getc() != 'A') {
 		return 1;
 	}
@@ -28,7 +28,7 @@ fn main() i32
 	if (buf.getc() != '日') {
 		return 4;
 	}
-	buf.seek(Buffer.HOLESIZE+1U);
+	buf.seekRaw(Buffer.HOLESIZE+1U);
 	if (buf.getc() != 'B') {
 		return 6;
 	}
