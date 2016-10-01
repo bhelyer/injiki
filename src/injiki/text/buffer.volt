@@ -89,6 +89,14 @@ class Buffer {
 
 	/// Insert a character at the point.
 	fn ins(c: dchar) {
+		moveHole(mPoint);
+		fn dgt(s: scope const(char)[]) {
+			expand(s.length);
+			for (i: size_t = 0; i < s.length; ++i) {
+				mBuffer[i + mPoint] = s[i];
+			}
+		}
+		encode(dgt, c);
 	}
 
 	/// Insert a string at the point.
@@ -151,7 +159,10 @@ class Buffer {
 		endOfHole := mHoleIndex + mHoleSize;
 		if (i > mHoleIndex) {
 			d := i - mHoleIndex;
-			mBuffer = mBuffer[0 .. mHoleIndex] ~ mBuffer[endOfHole .. endOfHole + d] ~ mBuffer[endOfHole + d .. $];
+			beginning := mBuffer[0 .. mHoleIndex] ~ mBuffer[endOfHole .. endOfHole + d];
+			end := mBuffer[endOfHole + d .. $];
+			mBuffer[0 .. mHoleIndex + d] = beginning;
+			mBuffer[endOfHole + d .. $] = end;
 		} else if (i < mHoleIndex) {
 			d := mHoleIndex - i;
 			beginning := mBuffer[0 .. mHoleIndex - d];
@@ -166,5 +177,4 @@ class Buffer {
 	private mHoleIndex: size_t;  //< Where the hole starts in the buffer.
 	private mHoleSize:  size_t;  //< How many bytes long the hole is.
 	private mPoint:     size_t;  //< Insertion point.
-	private mChanged:   bool;    //< Set when the buffer has been changed.
 }
