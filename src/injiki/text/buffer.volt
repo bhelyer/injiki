@@ -38,21 +38,24 @@ class Buffer {
 	/// Write a character at the point.
 	fn wc(c: dchar) {
 		newSize := utf8bytes(c);
-		existingSize := utf8bytes(rc());
+		existingSize: size_t;
+		replacing := (mPoint < mHoleIndex || mPoint >= mHoleIndex + mHoleSize) &&
+			mPoint < mBuffer.length;
+		if (replacing) {
+			existingSize = utf8bytes(rc());
+		}
 		moveHole(mPoint);
 
-		if (newSize < existingSize) {
+		if (!replacing) {
+			expand(newSize);
+		} else if (newSize < existingSize) {
 			mHoleIndex += newSize;
 			mHoleSize += (existingSize - newSize);
 		} else if (newSize > existingSize) {
 			expand(newSize);
 			mHoleSize += existingSize;
 		} else {
-			if (cast(i32)mBuffer[mPoint] == 0) {
-				expand(newSize);
-			} else {
-				mHoleIndex += newSize;
-			}
+			mHoleIndex += newSize;
 		}
 
 		fn dgt(s: scope const(char)[]) {
@@ -76,14 +79,9 @@ class Buffer {
 
 	/// Write a character at the point and advance it.
 	fn putc(c: dchar) {
-		fn dgt(s: scope const(char)[]) {
-			expand(s.length);
-			for (i: size_t = 0; i < s.length; ++i) {
-				mBuffer[i + mPoint] = s[i];
-			}
-			mPoint += s.length;
-		}
-		encode(dgt, c);
+		size := utf8bytes(c);
+		wc(c);
+		mPoint += size;
 	}
 
 	/// Insert a character at the point.
