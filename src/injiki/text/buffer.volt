@@ -46,9 +46,8 @@ class Buffer {
 			mHoleIndex -= d;
 			mHoleSize += d;
 		} else if (newSize > existingSize) {
-			// !!! What if the hole is too small?
-			mHoleIndex += newSize;
-			mHoleSize -= (newSize - existingSize);
+			expand(newSize);
+			mHoleSize += existingSize;
 		} else {
 			if (cast(i32)mBuffer[mPoint] == 0) {
 				expand(newSize);
