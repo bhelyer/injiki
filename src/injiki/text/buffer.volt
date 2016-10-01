@@ -42,9 +42,8 @@ class Buffer {
 		moveHole(mPoint);
 
 		if (newSize < existingSize) {
-			d := existingSize - newSize;
-			mHoleIndex -= d;
-			mHoleSize += d;
+			mHoleIndex += newSize;
+			mHoleSize += (existingSize - newSize);
 		} else if (newSize > existingSize) {
 			expand(newSize);
 			mHoleSize += existingSize;
