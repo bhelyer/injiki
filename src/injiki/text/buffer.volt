@@ -31,6 +31,9 @@ class Buffer {
 
 	/// Return the character at the point.
 	fn rc() dchar {
+		if (mPoint == mHoleIndex) {
+			mPoint = mHoleIndex+mHoleSize;
+		}
 		i: size_t;
 		return decode(cast(string)mBuffer[mPoint .. $], ref i);
 	}
