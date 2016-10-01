@@ -5,7 +5,9 @@
  */
 module injiki.text.buffer;
 
+import core.exception;
 import watt.io;
+import watt.io.streams;
 import watt.text.utf;
 
 import injiki.text.util;
@@ -21,12 +23,32 @@ import injiki.text.util;
 class Buffer {
 	enum HOLESIZE = 16384;  //< The amount the hole grows by.
 
-	/// Initialises an empty buffer, ready for insertion.
 	this() {
+		reset();
+	}
+
+	/// Initialises an empty buffer, ready for insertion.
+	fn reset() {
 		mBuffer = new char[](HOLESIZE);
 		mPoint = 0;
 		mHoleIndex = 0;
 		mHoleSize = mBuffer.length;
+	}
+
+	/// Open a file
+	fn loadFile(fname: string) {
+		ifs := new InputFileStream(fname);
+		if (ifs.handle is null) {
+			throw new Exception("couldn't open file");
+		}
+		while (!ifs.eof()) {
+			c := ifs.get();
+			if (ifs.eof()) {
+				break;
+			}
+			putc(c);
+		}
+		ifs.close();
 	}
 
 	/// Return the character at the point.
