@@ -28,5 +28,5 @@ fn main() i32
 		return 4;
 	}
 
-	return 0;
+	return buf.toString() == "A3ひ日" ? 0 : 5;
 }

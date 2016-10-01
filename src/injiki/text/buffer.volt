@@ -37,8 +37,28 @@ class Buffer {
 
 	/// Write a character at the point.
 	fn wc(c: dchar) {
+		newSize := utf8bytes(c);
+		existingSize := utf8bytes(rc());
+q
+		moveHole(mPoint);
+
+		if (newSize < existingSize) {
+			d := existingSize - newSize;
+			mHoleIndex -= d;
+			mHoleSize += d;
+		} else if (newSize > existingSize) {
+			// !!! What if the hole is too small?
+			mHoleIndex += newSize;
+			mHoleSize -= (newSize - existingSize);
+		} else {
+			if (cast(i32)mBuffer[mPoint] == 0) {
+				expand(newSize);
+			} else {
+				mHoleIndex += newSize;
+			}
+		}
+
 		fn dgt(s: scope const(char)[]) {
-			expand(s.length);
 			for (i: size_t = 0; i < s.length; ++i) {
 				mBuffer[i + mPoint] = s[i];
 			}
@@ -48,6 +68,9 @@ class Buffer {
 
 	/// Return the character at the point and advance it.
 	fn getc() dchar {
+		if (mPoint == mHoleIndex) {
+			mPoint = mHoleIndex+mHoleSize;
+		}
 		i: size_t;
 		c := decode(cast(string)mBuffer[mPoint .. $], ref i);
 		mPoint += i;
@@ -80,7 +103,7 @@ class Buffer {
 
 	/// Return the number of characters in the file.
 	fn size() size_t {
-		return 0;
+		return count(toString());
 	}
 
 	/// Returns true if we're at the end of file.
@@ -103,8 +126,15 @@ class Buffer {
 		mPoint = i;
 	}
 
-	/// Shrink the hole by n bytes. Grow buffer if needed.
+	override fn toString() string {
+		return cast(string)(mBuffer[0 .. mHoleIndex] ~ mBuffer[mHoleIndex+mHoleSize .. $]);
+	}
+
+	/// Prepare to write n bytes at the point.
 	private fn expand(n: size_t) {
+		if (mPoint != mHoleIndex) {
+			moveHole(mPoint);
+		}
 		if (mHoleSize < n) {
 			newBuffer := new char[](mBuffer.length + HOLESIZE);
 			newBuffer[0 .. mHoleIndex] = mBuffer[0 .. mHoleIndex];
@@ -116,6 +146,22 @@ class Buffer {
 		}
 		mHoleIndex += n;
 		mHoleSize -= n;
+	}
+
+	/// Move the hole to the index i.
+	private fn moveHole(i: size_t) {
+		endOfHole := mHoleIndex + mHoleSize;
+		if (i > mHoleIndex) {
+			d := i - mHoleIndex;
+			mBuffer = mBuffer[0 .. mHoleIndex] ~ mBuffer[endOfHole .. endOfHole + d] ~ mBuffer[endOfHole + d .. $];
+		} else if (i < mHoleIndex) {
+			d := mHoleIndex - i;
+			beginning := mBuffer[0 .. mHoleIndex - d];
+			end := mBuffer[mHoleIndex - d .. mHoleIndex] ~ mBuffer[endOfHole .. $];
+			mBuffer[0 .. mHoleIndex - d] = beginning;
+			mBuffer[endOfHole - d .. $] = end;
+		}
+		mHoleIndex = i;
 	}
 
 	private mBuffer:    char[];  //< The entire block of memory.

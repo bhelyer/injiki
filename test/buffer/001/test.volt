@@ -23,5 +23,5 @@ fn main() i32
 	if (buf.rc() != '日') {
 		return 4;
 	}
-	return 0;
+	return buf.toString() == "日" ? 0 : 5;
 }
