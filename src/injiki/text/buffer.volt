@@ -8,6 +8,8 @@ module injiki.text.buffer;
 import watt.io;
 import watt.text.utf;
 
+import injiki.text.util;
+
 /**
  * A Buffer represents a series of characters able to be modified at any point.
  *

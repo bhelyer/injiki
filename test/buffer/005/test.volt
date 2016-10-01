@@ -1,4 +1,5 @@
 //T dependency:../../../src/injiki/text/buffer.volt
+//T dependency:../../../src/injiki/text/util.volt
 module test;
 
 import injiki.text.buffer;
