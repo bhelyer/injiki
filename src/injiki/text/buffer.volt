@@ -101,6 +101,10 @@ class Buffer {
 
 	/// Insert a string at the point.
 	fn ins(s: string) {
+		// ins(c) will keep inserting at the same point, so insert the string backwards.
+		foreach_reverse (c: dchar; s) {
+			ins(c);
+		}
 	}
 
 	/// Delete n characters, beginning at the point.
