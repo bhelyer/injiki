@@ -102,6 +102,13 @@ class Buffer {
 		return c;
 	}
 
+	/// Call dgt with getc's result until 'c' is at the point, or EOF is reached.
+	fn getUntil(c: dchar, dgt: dg(dchar)) {
+		while (!eof() && rc() != c) {
+			dgt(getc());
+		}
+	}
+
 	/// Write a character at the point and advance it.
 	fn putc(c: dchar) {
 		size := utf8bytes(c);
@@ -140,7 +147,7 @@ class Buffer {
 
 	/// Returns true if we're at the end of file.
 	fn eof() bool {
-		return false;
+		return mPoint >= mBuffer.length;
 	}
 
 	/// Returns 0 if the string matches the one under the point.
