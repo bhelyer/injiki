@@ -2,22 +2,22 @@ module injiki.app;
 
 import injiki.text.buffer;
 import injiki.ui.console;
-version (Windows) import injiki.ui.win32console;
+/+version (Windows) +/import injiki.ui.win32console;
 
 class App {
 	this() {
 		mConsole = new Win32Console();
 		mConsole.title = "Injiki";
-		mBuffer = new Buffer();
+		//mBuffer = new Buffer();
 	}
 
 	fn run() i32 {
-		display("src/main.volt");
+		//display("src/main.volt");
 		mConsole.getch();
 		return 0;
 	}
 
-	fn display(filename: string) {
+//	fn display(filename: string) {
 //		colour: Console.Colour;
 //		mBuffer.loadFile(filename);
 	//	mBuffer.seekRaw(0);
@@ -36,8 +36,8 @@ class App {
 			mBuffer.getUntil('\n', cat);
 			mConsole.puts(0, y, colour, colour, cast(string)buf);
 		}+/
-	}
+//	}
 
 	private mConsole: Console;
-	private mBuffer: Buffer;
+//	private mBuffer: Buffer;
 }
