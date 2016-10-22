@@ -1,2 +1,6 @@
 --dep
 watt
+--dep
+amp
+-l
+SDL2.lib

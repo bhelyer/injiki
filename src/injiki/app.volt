@@ -2,29 +2,36 @@ module injiki.app;
 
 import injiki.text.buffer;
 import injiki.ui.console;
-/+version (Windows) +/import injiki.ui.win32console;
+import injiki.ui.sdlconsole;
+import watt.io;
+import watt.text.format;
 
 class App {
 	this() {
-		mConsole = new Win32Console();
+		mConsole = new SdlConsole();
 		mConsole.title = "Injiki";
-		//mBuffer = new Buffer();
+		mBuffer = new Buffer();
 	}
 
 	fn run() i32 {
-		//display("src/main.volt");
-		mConsole.getch();
+		mConsole.loop();
 		return 0;
 	}
 
-//	fn display(filename: string) {
-//		colour: Console.Colour;
-//		mBuffer.loadFile(filename);
-	//	mBuffer.seekRaw(0);
-		//w := 80;
-		//h := 24;
-/+		foreach (y; 0 .. h) {
-			buf := new char[](w);
+	fn display(filename: string) {
+	/+
+		colour: Console.Colour;
+		mBuffer.loadFile(filename);
+		mBuffer.seekRaw(0);
+		console := cast(Win32Console)mConsole;  // TODO: bug
+		w := console.width;
+		h := console.height;
+		writefln("%s %s", w, h);
+		buf := new char[](w);
+		foreach (y; 0 .. h) {
+			if (mBuffer.eof()) {
+//				break;
+			}
 			i: i32 = 0;
 			fn cat(c: dchar) {
 				if (i >= w) {
@@ -34,10 +41,21 @@ class App {
 			}
 			
 			mBuffer.getUntil('\n', cat);
-			mConsole.puts(0, y, colour, colour, cast(string)buf);
+			if (buf.length > 0) {
+				mConsole.puts(0, y, colour, colour, format("hello world %s", y));//cast(string)buf[0 .. i]);
+			}
+			if (!mBuffer.eof()) {
+				mBuffer.getc();
+			}
+			/+if (buf.length > 0) {
+				mConsole.puts(0, y, colour, colour, cast(string)buf);
+			}
+			if (!mBuffer.eof()) {
+				mBuffer.getc();  // Eat the newline.
+			}+/
 		}+/
-//	}
+	}
 
-	private mConsole: Console;
-//	private mBuffer: Buffer;
+	private mConsole: SdlConsole;
+	private mBuffer: Buffer;
 }
