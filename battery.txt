@@ -2,5 +2,9 @@
 watt
 --dep
 amp
+--if-msvc
 -l
 SDL2.lib
+--if-linux
+--cmd
+sdl2-config --libs
