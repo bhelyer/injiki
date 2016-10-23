@@ -4,8 +4,8 @@ import watt.conv;
 import watt.io;
 
 import amp.sdl2;
-import amp.gl;
-import amp.gl.loader;
+import lib.gl;
+import lib.gl.loader;
 
 import injiki.ui.console;
 
@@ -96,10 +96,11 @@ class SdlConsole : Console {
 		SDL_DestroyWindow(mWindow);
 	}
 
+	private fn loadGlFunc(name: string) void* {
+		return SDL_GL_GetProcAddress(name.ptr);
+	}
+
 	private mWindow: SDL_Window*;
 	private mContext: SDL_GLContext;
 }
 
-private fn loadGlFunc(name: const(char)*) void* {
-	return SDL_GL_GetProcAddress(name);
-}
