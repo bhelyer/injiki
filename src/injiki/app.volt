@@ -9,7 +9,7 @@ import watt.text.format;
 class App {
 	this() {
 		mConsole = new SdlConsole();
-		mConsole.title = "Injiki";
+		mConsole.title = "印字機";
 		mBuffer = new Buffer();
 	}
 
