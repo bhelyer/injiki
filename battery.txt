@@ -5,6 +5,7 @@ amp
 --if-msvc
 -l
 SDL2.lib
+--if-osx
 --if-linux
 --cmd
 sdl2-config --libs
