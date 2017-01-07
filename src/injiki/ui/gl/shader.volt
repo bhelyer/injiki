@@ -8,7 +8,7 @@ import watt.io;
 
 fn makeShaderVF(name: string, vert: string, frag: string) GLuint {
 	// Compile the shaders
-	shader := createAndCompileShaderVF(name, vert, frag);
+	shader := createAndCompileShaderVGF(name, vert, null, frag);
 
 	// Linking the Shader Program
 	glLinkProgram(shader);
@@ -22,29 +22,61 @@ fn makeShaderVF(name: string, vert: string, frag: string) GLuint {
 	return shader;
 }
 
-fn createAndCompileShaderVF(name: string, vert: string, frag: string) GLuint {
-	assert(vert.length > 0 && frag.length > 0);
+fn makeShaderVGF(name: string, vert: string, geom: string, frag: string) GLuint {
+	// Compile the shaders
+	shader := createAndCompileShaderVGF(name, vert, geom, frag);
 
-	// Create the handels
-	vertShader := glCreateShader(GL_VERTEX_SHADER);
-	fragShader := glCreateShader(GL_FRAGMENT_SHADER);
+	// Linking the Shader Program
+	glLinkProgram(shader);
+
+	// Check status and print any debug message.
+	if (!printDebug(name, shader, true, "program (vert/geom/frag)")) {
+		glDeleteProgram(shader);
+		return 0;
+	}
+
+	return shader;
+}
+
+fn createAndCompileShaderVGF(name: string, vert: string, geom: string, frag: string) GLuint
+{
+	// Create the handel
 	programShader := glCreateProgram();
 
-	// Attach the shaders to a program handel.
-	glAttachShader(programShader, vertShader);
-	glAttachShader(programShader, fragShader);
-
 	// Load and compile the Vertex Shader
-	compileShader(name, vertShader, vert, "vert");
+	if (vert.length > 0) {
+		vertShader := glCreateShader(GL_VERTEX_SHADER);
+		glAttachShader(programShader, vertShader);
+
+		compileShader(name, vertShader, vert, "vert");
+
+		// The shader objects are not needed any more.
+		glDeleteShader(vertShader);
+	}
 
 	// Load and compile the Fragment Shader
-	compileShader(name, fragShader, frag, "frag");
+	if (geom.length > 0) {
+		geomShader := glCreateShader(GL_GEOMETRY_SHADER);
+		glAttachShader(programShader, geomShader);
 
-	// The shader objects are not needed any more,
-	// the programShader is the complete shader to be used.
-	glDeleteShader(vertShader);
-	glDeleteShader(fragShader);
+		compileShader(name, geomShader, geom, "geom");
 
+		// The shader objects are not needed any more.
+		glDeleteShader(geomShader);
+	}
+
+	// Load and compile the Fragment Shader
+	if (frag.length > 0) {
+		fragShader := glCreateShader(GL_FRAGMENT_SHADER);
+		glAttachShader(programShader, fragShader);
+
+		compileShader(name, fragShader, frag, "frag");
+
+		// The shader objects are not needed any more.
+		glDeleteShader(fragShader);
+	}
+
+	// The programShader is the complete shader to be used.
 	return programShader;
 }
 

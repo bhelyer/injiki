@@ -18,9 +18,10 @@ public:
 		checkOpenGL();
 
 		vertStr := import("glyph.vert.glsl");
+		geomStr := import("glyph.geom.glsl");
 		fragStr := import("glyph.frag.glsl");
 
-		shader = makeShaderVF("glyph", vertStr, fragStr);
+		shader = makeShaderVGF("glyph", vertStr, geomStr, fragStr);
 	}
 
 	fn close() {
