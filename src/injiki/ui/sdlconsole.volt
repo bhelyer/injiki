@@ -8,8 +8,15 @@ import lib.gl;
 import lib.gl.loader;
 
 import injiki.ui.console;
+import injiki.ui.gl.glyph;
+
 
 class SdlConsole : Console {
+public:
+	renderer: OpenGLGlyphRenderer;
+
+
+public:
 	this() {
 		initSdl();
 		initGl();
@@ -88,10 +95,15 @@ class SdlConsole : Console {
 
 	private fn initGl() {
 		gladLoadGL(loadGlFunc);
-		writefln("Loaded OpenGL %s.%s (apparently).", GL_MAJOR, GL_MINOR);
+		writefln("Loaded OpenGL %s.%s.", GL_MAJOR, GL_MINOR);
+		renderer = new OpenGLGlyphRenderer();
 	}
 
 	private fn cleanUpSdl() {
+		if (renderer !is null) {
+			renderer.close();
+			renderer = null;
+		}
 		SDL_GL_DeleteContext(mContext);
 		SDL_DestroyWindow(mWindow);
 	}
