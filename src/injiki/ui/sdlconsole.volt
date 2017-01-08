@@ -43,6 +43,7 @@ public:
 		inLoop := true;
 		while (inLoop) {
 			handleEvents(ref inLoop);
+			renderer.render();
 			SDL_GL_SwapWindow(mWindow);
 		}
 		cleanUpSdl();
