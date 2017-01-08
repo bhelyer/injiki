@@ -6,6 +6,7 @@ import core.exception;
 import lib.gl;
 import watt.io;
 import injiki.ui.gl.util;
+import injiki.ui.gl.timer;
 import injiki.ui.gl.shader;
 
 
@@ -16,6 +17,8 @@ public:
 	vao: GLuint;
 	info: float[4];
 
+	timer: Timer;
+
 	numGlyphs: GLsizei;
 	glyphW, glyphH: uint;
 	screenW, screenH: uint;
@@ -24,6 +27,7 @@ public:
 public:
 	this() {
 		checkOpenGL();
+		timer.setup();
 
 		vertStr := import("glyph.vert.glsl");
 		geomStr := import("glyph.geom.glsl");
@@ -55,6 +59,7 @@ public:
 			glDeleteVertexArrays(1, &vao);
 			vao = 0;
 		}
+		timer.close();
 	}
 
 	fn setScreenSize(screenW: uint, screenH: uint) {
