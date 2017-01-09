@@ -3,23 +3,23 @@
 #extension GL_ARB_separate_shader_objects : require
 
 layout (points) in;
-layout (location = 0) in vec4[] inPosition;
-layout (location = 1) in vec3[] inGlyph;
+layout (location = 0) in vec4[] gsPosition;
+layout (location = 1) in vec3[] gsGlyph;
 
 layout (triangle_strip, max_vertices = 4) out;
-layout (location = 0) out vec3 outGlyph;
-layout (location = 1) out vec2 outUV;
+layout (location = 0) out vec3 fsGlyph;
+layout (location = 1) out vec2 fsUV;
 
-#define minX inPosition[0].x
-#define minY inPosition[0].y
-#define maxX inPosition[0].z
-#define maxY inPosition[0].w
+#define minX gsPosition[0].x
+#define minY gsPosition[0].y
+#define maxX gsPosition[0].z
+#define maxY gsPosition[0].w
 
 
 void emit(vec2 pos, vec2 uv)
 {
-	outGlyph = inGlyph[0];
-	outUV = uv;
+	fsGlyph = gsGlyph[0];
+	fsUV = uv;
 	gl_Position = vec4(pos, 0.0, 1.0);
 	EmitVertex();
 }

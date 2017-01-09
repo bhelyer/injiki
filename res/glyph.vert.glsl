@@ -3,8 +3,8 @@
 #extension GL_ARB_separate_shader_objects : require
 
 layout (location = 0) in vec4 inData;
-layout (location = 0) out vec4 outPosition;
-layout (location = 1) out vec3 outGlyph;
+layout (location = 0) out vec4 gsPosition;
+layout (location = 1) out vec3 gsGlyph;
 
 uniform vec4 info;
 
@@ -27,8 +27,8 @@ void main(void)
 	y = y * -glyphH + 1.0;
 
 	// Pack min and max for this glyph into position.
-	outPosition = vec4(x, y, x + glyphW, y - glyphH);
+	gsPosition = vec4(x, y, x + glyphW, y - glyphH);
 
 	// Glyph data is formated as 4 ubytes, the first 2 is a 16bit glyph index.
-	outGlyph = vec3(inData.x * 256 + inData.y, inData.zw);
+	gsGlyph = vec3(inData.x * 256 + inData.y, inData.zw);
 }
