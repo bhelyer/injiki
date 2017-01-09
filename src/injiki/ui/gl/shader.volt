@@ -42,6 +42,7 @@ fn createAndCompileShaderVGF(name: string, vert: string, geom: string, frag: str
 {
 	// Create the handel
 	programShader := glCreateProgram();
+	glProgramParameteri(programShader, GL_PROGRAM_SEPARABLE, GL_TRUE);
 
 	// Load and compile the Vertex Shader
 	if (vert.length > 0) {
