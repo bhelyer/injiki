@@ -1,10 +1,9 @@
 #version 330 core
 #extension GL_ARB_explicit_attrib_location : require
-#extension GL_ARB_separate_shader_objects : require
 
 layout (location = 0) in vec4 inData;
-layout (location = 0) out vec4 gsPosition;
-layout (location = 1) out vec3 gsGlyph;
+out vec4 gsPosition;
+out vec3 gsGlyph;
 
 uniform vec4 info;
 

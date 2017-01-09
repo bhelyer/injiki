@@ -1,14 +1,12 @@
 #version 330 core
-#extension GL_ARB_explicit_attrib_location : require
-#extension GL_ARB_separate_shader_objects : require
 
 layout (points) in;
-layout (location = 0) in vec4[] gsPosition;
-layout (location = 1) in vec3[] gsGlyph;
+in vec4[] gsPosition;
+in vec3[] gsGlyph;
 
 layout (triangle_strip, max_vertices = 4) out;
-layout (location = 0) out vec3 fsGlyph;
-layout (location = 1) out vec2 fsUV;
+out vec3 fsGlyph;
+out vec2 fsUV;
 
 #define minX gsPosition[0].x
 #define minY gsPosition[0].y
