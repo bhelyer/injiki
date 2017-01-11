@@ -550,6 +550,7 @@ void load_GL_ARB_separate_shader_objects(Loader load) {
 	glGenProgramPipelines = cast(typeof(glGenProgramPipelines))load("glGenProgramPipelines");
 	glIsProgramPipeline = cast(typeof(glIsProgramPipeline))load("glIsProgramPipeline");
 	glGetProgramPipelineiv = cast(typeof(glGetProgramPipelineiv))load("glGetProgramPipelineiv");
+	glProgramParameteri = cast(typeof(glProgramParameteri))load("glProgramParameteri");
 	glProgramUniform1i = cast(typeof(glProgramUniform1i))load("glProgramUniform1i");
 	glProgramUniform1iv = cast(typeof(glProgramUniform1iv))load("glProgramUniform1iv");
 	glProgramUniform1f = cast(typeof(glProgramUniform1f))load("glProgramUniform1f");

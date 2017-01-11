@@ -16,6 +16,7 @@ void glDeleteProgramPipelines(GLsizei, const(GLuint)*);
 void glGenProgramPipelines(GLsizei, GLuint*);
 GLboolean glIsProgramPipeline(GLuint);
 void glGetProgramPipelineiv(GLuint, GLenum, GLint*);
+void glProgramParameteri(GLuint, GLenum, GLint);
 void glProgramUniform1i(GLuint, GLint, GLint);
 void glProgramUniform1iv(GLuint, GLint, GLsizei, const(GLint)*);
 void glProgramUniform1f(GLuint, GLint, GLfloat);

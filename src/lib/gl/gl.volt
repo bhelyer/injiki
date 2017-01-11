@@ -82,7 +82,7 @@ glPixelStoref, glUniform3uiv, glVertexAttribP2ui, glGetBooleani_v;
 public import lib.gl.ext :
 glProgramUniformMatrix3x4dv, glGenProgramPipelines, glProgramUniform3iv, glGetDebugMessageLog, glProgramUniform4dv, 
 glProgramUniformMatrix2x4fv, glProgramUniform1iv, glProgramUniformMatrix4x3fv, glValidateProgramPipeline, glProgramUniformMatrix4fv, 
-glGetObjectLabel, glProgramUniform3dv, glPopDebugGroupKHR, glProgramUniform2dv, glProgramUniformMatrix2x3dv, 
+glGetObjectLabel, glProgramUniform3dv, glPopDebugGroupKHR, glProgramParameteri, glProgramUniform2dv, glProgramUniformMatrix2x3dv, 
 glProgramUniform2i, glIsProgramPipeline, glGetDebugMessageLogKHR, glGetPointervKHR, glProgramUniform2f, 
 glProgramUniform2ui, glDebugMessageCallbackKHR, glPushDebugGroup, glProgramUniform1dv, glObjectPtrLabel, 
 glProgramUniformMatrix3x2dv, glProgramUniformMatrix4dv, glProgramUniformMatrix4x3dv, glPopDebugGroup, glProgramUniform3i, 
