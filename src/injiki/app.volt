@@ -7,6 +7,12 @@ import watt.io;
 import watt.text.format;
 
 class App {
+private:
+	mConsole: SdlConsole;
+	mBuffer: Buffer;
+
+
+public:
 	this() {
 		mConsole = new SdlConsole();
 		mConsole.title = "印字機";
@@ -53,9 +59,7 @@ class App {
 			if (!mBuffer.eof()) {
 				mBuffer.getc();  // Eat the newline.
 			}+/
-		}+/
+		}
++/
 	}
-
-	private mConsole: SdlConsole;
-	private mBuffer: Buffer;
 }
