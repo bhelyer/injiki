@@ -16,6 +16,8 @@ class SdlConsole : Console
 private:
 	mRenderer: GlyphRenderer;
 	mGlyphs: GlyphStore;
+	mScreen: GlyphGrid;
+
 	mWindow: SDL_Window*;
 	mContext: SDL_GLContext;
 
@@ -53,7 +55,7 @@ public:
 		inLoop := true;
 		while (inLoop) {
 			handleEvents(ref inLoop);
-			mRenderer.render();
+			mScreen.render();
 			SDL_GL_SwapWindow(mWindow);
 		}
 		cleanUpSdl();
@@ -118,6 +120,9 @@ private:
 		gladLoadGL(loadGlFunc);
 		writefln("Loaded OpenGL %s.%s.", GL_MAJOR, GL_MINOR);
 
+		// Needed for all other glyph parts.
+		mRenderer := new GlyphRenderer();
+
 		// Setup glyph size and store
 		w, h: u32; w = 8; h = 10;
 		mGlyphs := new GlyphStore(w, h);
@@ -132,7 +137,7 @@ private:
 		mGlyphs.uploadGlyph(1, data);
 
 		// And then setup the renderer.
-		mRenderer = new GlyphRenderer(mGlyphs);
+		mScreen = new GlyphGrid(mRenderer, mGlyphs, 800, 600);
 	}
 
 	fn cleanUpSdl()
