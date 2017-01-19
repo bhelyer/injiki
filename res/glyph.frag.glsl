@@ -6,6 +6,8 @@ layout (location = 0) in vec3 inGlyph;
 layout (location = 1) in vec2 inUV;
 layout (location = 0) out vec4 outColor;
 
+layout (binding = 0) uniform sampler2DArray tex;
+
 #define glyphIndex inGlyph.x
 #define fgColor inGlyph.y
 #define bgColor inGlyph.z
@@ -13,5 +15,6 @@ layout (location = 0) out vec4 outColor;
 
 void main(void)
 {
-	outColor = vec4(inUV, 0.0, 1.0);
+	float a = texture(tex, vec3(inUV, glyphIndex)).r;
+	outColor = vec4(vec3(a), 1.0);
 }

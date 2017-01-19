@@ -13,21 +13,29 @@ import injiki.ui.gl.shader;
 class OpenGLGlyphRenderer {
 public:
 	shader: GLuint;
+	sampler: GLuint;
+	tex: GLuint;
 	buf: GLuint;
 	vao: GLuint;
 	info: float[4];
 
 	timer: Timer;
 
-	numGlyphs: GLsizei;
-	glyphW, glyphH: uint;
-	screenW, screenH: uint;
+
+private:
+	mData: u32[];
+	mNumGlyphs: GLsizei;
+	mGlyphW, mGlyphH: u32;
+	mScreenW, mScreenH: u32;
 
 
 public:
-	this() {
+	this(glyphW: u32, glyphH: u32) {
 		checkOpenGL();
 		timer.setup();
+
+		mGlyphW = glyphW;
+		mGlyphH = glyphH;
 
 		vertStr := import("glyph.vert.glsl");
 		geomStr := import("glyph.geom.glsl");
@@ -35,12 +43,9 @@ public:
 
 		shader = makeShaderVGF("glyph", vertStr, geomStr, fragStr);
 
-		// Create buffers.
+		// Initial creation.
+		createTexture();
 		createBuffers();
-
-		// Default font size, we don't use the setGlyphSize function
-		// since the screen size has not yet been set.
-		glyphW = 8; glyphH = 10;
 
 		// Set a default screen size.
 		setScreenSize(800, 600);
@@ -50,6 +55,10 @@ public:
 		if (shader != 0) {
 			glDeleteProgram(shader);
 			shader = 0;
+		}
+		if (tex != 0) {
+			glDeleteTextures(1, &tex);
+			tex = 0;
 		}
 		if (buf != 0) {
 			glDeleteBuffers(1, &buf);
@@ -62,31 +71,72 @@ public:
 		timer.close();
 	}
 
-	fn setScreenSize(screenW: uint, screenH: uint) {
-		this.screenW = screenW;
-		this.screenH = screenH;
-
-		calculateDerivedSizes();
+	fn uploadGlyph(index: u16, data: const(u8)[]) {
+		glBindTexture(GL_TEXTURE_2D_ARRAY, tex);
+		glTexSubImage3D(
+			GL_TEXTURE_2D_ARRAY,  // GLenum target,
+ 			0,                    // GLint level,
+			0,                    // GLint xoffset,
+ 			0,                    // GLint yoffset,
+ 			cast(GLint)index,     // GLint zoffset,
+ 			cast(GLsizei)mGlyphW, //GLsizei width,
+ 			cast(GLsizei)mGlyphH, //GLsizei height,
+ 			1,                    //GLsizei depth,
+ 			GL_RED,               //GLenum format,
+ 			GL_UNSIGNED_BYTE,     //GLenum type,
+ 			cast(const(void)*)data.ptr);
+		glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 	}
 
-	fn setGlyphSize(glyphW: uint, glyphH: uint) {
-		this.glyphW = glyphW;
-		this.glyphH = glyphH;
+	fn setScreenSize(screenW: uint, screenH: uint) {
+		if (mScreenW == screenW &&
+		    mScreenH == screenH) {
+			return;
+		}
+
+		mScreenW = screenW;
+		mScreenH = screenH;
 
 		calculateDerivedSizes();
 	}
 
 	fn render() {
-		glBindVertexArray(vao);
 		glUseProgram(shader);
-		glDrawArrays(GL_POINTS, 0, numGlyphs);
-		glUseProgram(0);
+		glBindVertexArray(vao);
+		glBindSampler(0, sampler);
+		glBindTexture(GL_TEXTURE_2D_ARRAY, tex);
+		glDrawArrays(GL_POINTS, 0, mNumGlyphs);
+		glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+		glBindSampler(0, 0);
 		glBindVertexArray(0);
+		glUseProgram(0);
 		glCheckError();
 	}
 
 
 private:
+	fn createTexture() {
+		glGenSamplers(1, &sampler);
+		glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+		// Setup vertex buffer and upload the data.
+		glGenTextures(1, &tex);
+		glBindTexture(GL_TEXTURE_2D_ARRAY, tex);
+		glTexImage3D(
+			GL_TEXTURE_2D_ARRAY,  // GLenum target,
+ 			0,                    // GLint level,
+ 			GL_R8,                // GLint internalFormat,
+ 			cast(GLsizei)mGlyphW, // GLsizei width,
+ 			cast(GLsizei)mGlyphH, // GLsizei height,
+ 			256,                  // GLsizei depth,
+ 			0,                    // GLint border,
+ 			GL_RED,               // GLenum format,
+ 			GL_UNSIGNED_BYTE,     // GLenum type,
+ 			null);
+		glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+	}
+
 	fn createBuffers() {
 		// Setup vertex buffer and upload the data.
 		glGenBuffers(1, &buf);
@@ -108,25 +158,42 @@ private:
 	}
 
 	fn calculateDerivedSizes() {
-		numGlyphsW := (screenW / glyphW);
-		numGlyphsH := (screenH / glyphH);
-		numGlyphs = cast(GLsizei)(numGlyphsW * numGlyphsH);
+		numGlyphsW := (mScreenW / mGlyphW);
+		numGlyphsH := (mScreenH / mGlyphH);
+		numGlyphs := cast(GLsizei)(numGlyphsW * numGlyphsH);
 
-		pixelsW := numGlyphsW * glyphW;
-		pixelsH := numGlyphsH * glyphH;
+		updateNumGlyphs(numGlyphs);
 
-		info[0] = cast(float)glyphW / cast(float)pixelsW * 2.f;
-		info[1] = cast(float)glyphH / cast(float)pixelsH * 2.f;
-		info[2] = cast(float)(pixelsW / glyphW);
+		pixelsW := numGlyphsW * mGlyphW;
+		pixelsH := numGlyphsH * mGlyphH;
+
+		info[0] = cast(float)mGlyphW / cast(float)pixelsW * 2.f;
+		info[1] = cast(float)mGlyphH / cast(float)pixelsH * 2.f;
+		info[2] = cast(float)(pixelsW / mGlyphW);
 
 		glUseProgram(shader);
 		loc := glGetUniformLocation(shader, "info");
 		glUniform4fv(loc, 1, info.ptr);
 		glUseProgram(0);
 		glCheckError();
+	}
+
+	fn updateNumGlyphs(numGlyphs: GLsizei) {
+		if (mNumGlyphs == numGlyphs) {
+			return;
+		}
+
+		// Update the host store.
+		mNumGlyphs = numGlyphs;
+		mData = new u32[](mNumGlyphs);
+
+		// Temporary hack with initial data.
+		foreach (i, ref d; mData) {
+			d = cast(u32)i;
+		}
 
 		glBindBuffer(GL_ARRAY_BUFFER, buf);
-		glBufferData(GL_ARRAY_BUFFER, numGlyphs * 4, null, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, mNumGlyphs * 4, cast(void*)mData.ptr, GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glCheckError();
 	}

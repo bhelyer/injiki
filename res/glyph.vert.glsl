@@ -30,5 +30,5 @@ void main(void)
 	outPosition = vec4(x, y, x + glyphW, y - glyphH);
 
 	// Glyph data is formated as 4 ubytes, the first 2 is a 16bit glyph index.
-	outGlyph = vec3(inData.x * 256 + inData.y, inData.zw);
+	outGlyph = vec3(inData.y * 256 + inData.x, inData.zw);
 }

@@ -97,7 +97,20 @@ public:
 	private fn initGl() {
 		gladLoadGL(loadGlFunc);
 		writefln("Loaded OpenGL %s.%s.", GL_MAJOR, GL_MINOR);
-		renderer = new OpenGLGlyphRenderer();
+
+		// Setup glyph size and create renderer.
+		w, h: u32; w = 8; h = 10;
+		renderer = new OpenGLGlyphRenderer(w, h);
+
+		// Temporary hack to upload a glyph.
+		numPixels := w * h;
+		data := new u8[](numPixels);
+		inc :=  255.f / (numPixels - 1);
+		foreach (i, ref d; data) {
+			d = cast(u8)(i * inc);
+		}
+
+		renderer.uploadGlyph(1, data);
 	}
 
 	private fn cleanUpSdl() {
