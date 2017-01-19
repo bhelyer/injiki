@@ -22,6 +22,7 @@ public:
 
 
 private:
+	mUniform: GLuint;
 	mSampler: GLuint;
 
 	mGlyphs: GlyphStore;
@@ -61,6 +62,10 @@ public:
 			glDeleteSamplers(1, &mSampler);
 			mSampler = 0;
 		}
+		if (mUniform != 0) {
+			glDeleteBuffers(1, &mUniform);
+			mUniform = 0;
+		}
 		if (shader != 0) {
 			glDeleteProgram(shader);
 			shader = 0;
@@ -94,9 +99,11 @@ public:
 		glUseProgram(shader);
 		glBindVertexArray(vao);
 		glBindSampler(0, mSampler);
+		glBindBufferBase(GL_UNIFORM_BUFFER, 0, mUniform);
 		glBindTexture(GL_TEXTURE_2D_ARRAY, mGlyphs.mTexture);
 		glDrawArrays(GL_POINTS, 0, mNumGlyphs);
 		glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+		glBindBufferBase(GL_UNIFORM_BUFFER, 0, 0);
 		glBindSampler(0, 0);
 		glBindVertexArray(0);
 		glUseProgram(0);
@@ -109,6 +116,7 @@ private:
 	{
 		// Setup vertex buffer and upload the data.
 		glGenBuffers(1, &buf);
+		glGenBuffers(1, &mUniform);
 		glGenVertexArrays(1, &vao);
 
 		// And the darkness bind them.
@@ -123,6 +131,13 @@ private:
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
+		glCheckError();
+
+
+		// Setup the uniform buffer.
+		glBindBuffer(GL_UNIFORM_BUFFER, mUniform);
+		glBufferData(GL_UNIFORM_BUFFER, 4 * 4, null, GL_STATIC_DRAW);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		glCheckError();
 	}
 
@@ -141,10 +156,9 @@ private:
 		info[1] = cast(float)mGlyphs.mGlyphH / cast(float)pixelsH * 2.f;
 		info[2] = cast(float)(pixelsW / mGlyphs.mGlyphW);
 
-		glUseProgram(shader);
-		loc := glGetUniformLocation(shader, "info");
-		glUniform4fv(loc, 1, info.ptr);
-		glUseProgram(0);
+		glBindBuffer(GL_UNIFORM_BUFFER, mUniform);
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, 4 * 4, cast(void*)info.ptr);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		glCheckError();
 	}
 

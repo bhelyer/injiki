@@ -6,7 +6,9 @@ layout (location = 0) in vec4 inData;
 layout (location = 0) out vec4 outPosition;
 layout (location = 1) out vec3 outGlyph;
 
-uniform vec4 info;
+layout (binding = 0, std140) uniform Uniforms {
+	vec4 info;
+};
 
 #define stride info.z
 #define glyphW info.x
