@@ -8,7 +8,8 @@ import watt.io.std;
 import lib.gl;
 
 
-fn glCheckError(file: const(char)[] = __FILE__, line: int = __LINE__) {
+fn glCheckError(file: const(char)[] = __FILE__, line: int = __LINE__)
+{
 	err := glGetError();
 	if (!err) {
 		return;

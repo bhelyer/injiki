@@ -6,7 +6,8 @@ import lib.gl;
 import watt.io;
 
 
-fn makeShaderVF(name: string, vert: string, frag: string) GLuint {
+fn makeShaderVF(name: string, vert: string, frag: string) GLuint
+{
 	// Compile the shaders
 	shader := createAndCompileShaderVGF(name, vert, null, frag);
 
@@ -22,7 +23,8 @@ fn makeShaderVF(name: string, vert: string, frag: string) GLuint {
 	return shader;
 }
 
-fn makeShaderVGF(name: string, vert: string, geom: string, frag: string) GLuint {
+fn makeShaderVGF(name: string, vert: string, geom: string, frag: string) GLuint
+{
 	// Compile the shaders
 	shader := createAndCompileShaderVGF(name, vert, geom, frag);
 
@@ -81,7 +83,8 @@ fn createAndCompileShaderVGF(name: string, vert: string, geom: string, frag: str
 	return programShader;
 }
 
-fn compileShader(name: string, shader: GLuint, source: string, type: string) {
+fn compileShader(name: string, shader: GLuint, source: string, type: string)
+{
 	ptr: const(char)*;
 	length: int;
 
@@ -94,7 +97,8 @@ fn compileShader(name: string, shader: GLuint, source: string, type: string) {
 	printDebug(name, shader, false, type);
 }
 
-fn printDebug(name: string, shader: GLuint, program: bool, type: string) bool {
+fn printDebug(name: string, shader: GLuint, program: bool, type: string) bool
+{
 	// Instead of pointers, realy bothersome.
 	status: GLint;
 	length: GLint;

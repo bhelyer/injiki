@@ -12,6 +12,7 @@ import watt.text.utf;
 
 import injiki.text.util;
 
+
 /**
  * A Buffer represents a series of characters able to be modified at any point.
  *
@@ -20,15 +21,28 @@ import injiki.text.util;
  * Text is inserted into the hole, without moving large amounts of data if
  * the point (usually the cursor; where text is being inserted) isn't moved.
  */
-class Buffer {
+class Buffer
+{
+public:
 	enum HOLESIZE = 16384;  //< The amount the hole grows by.
 
-	this() {
+
+private:
+	mBuffer:    char[];  //< The entire block of memory.
+	mHoleIndex: size_t;  //< Where the hole starts in the buffer.
+	mHoleSize:  size_t;  //< How many bytes long the hole is.
+	mPoint:     size_t;  //< Insertion point.
+
+
+public:
+	this()
+	{
 		reset();
 	}
 
 	/// Initialises an empty buffer, ready for insertion.
-	fn reset() {
+	fn reset()
+	{
 		mBuffer = new char[](HOLESIZE);
 		mPoint = 0;
 		mHoleIndex = 0;
@@ -36,7 +50,8 @@ class Buffer {
 	}
 
 	/// Open a file
-	fn loadFile(fname: string) {
+	fn loadFile(fname: string)
+	{
 		ifs := new InputFileStream(fname);
 		if (ifs.handle is null) {
 			throw new Exception("couldn't open file");
@@ -52,7 +67,8 @@ class Buffer {
 	}
 
 	/// Return the character at the point.
-	fn rc() dchar {
+	fn rc() dchar
+	{
 		if (mPoint == mHoleIndex) {
 			mPoint = mHoleIndex+mHoleSize;
 		}
@@ -61,7 +77,8 @@ class Buffer {
 	}
 
 	/// Write a character at the point.
-	fn wc(c: dchar) {
+	fn wc(c: dchar)
+	{
 		newSize := utf8bytes(c);
 		existingSize: size_t;
 		replacing := (mPoint < mHoleIndex || mPoint >= mHoleIndex + mHoleSize) &&
@@ -92,7 +109,8 @@ class Buffer {
 	}
 
 	/// Return the character at the point and advance it.
-	fn getc() dchar {
+	fn getc() dchar
+	{
 		if (mPoint == mHoleIndex) {
 			mPoint = mHoleIndex+mHoleSize;
 		}
@@ -103,14 +121,16 @@ class Buffer {
 	}
 
 	/// Call dgt with getc's result until 'c' is at the point, or EOF is reached.
-	fn getUntil(c: dchar, dgt: dg(dchar)) {
+	fn getUntil(c: dchar, dgt: dg(dchar))
+	{
 		while (!eof() && rc() != c) {
 			dgt(getc());
 		}
 	}
 
 	/// Write a character at the point and advance it.
-	fn putc(c: dchar) {
+	fn putc(c: dchar)
+	{
 		size := utf8bytes(c);
 		wc(c);
 		mPoint += size;
@@ -129,7 +149,8 @@ class Buffer {
 	}
 
 	/// Insert a string at the point.
-	fn ins(s: string) {
+	fn ins(s: string)
+	{
 		// ins(c) will keep inserting at the same point, so insert the string backwards.
 		foreach_reverse (c: dchar; s) {
 			ins(c);
@@ -137,16 +158,19 @@ class Buffer {
 	}
 
 	/// Delete n characters, beginning at the point.
-	fn del(n: size_t) {
+	fn del(n: size_t)
+	{
 	}
 
 	/// Return the number of characters in the file.
-	fn size() size_t {
+	fn size() size_t
+	{
 		return count(toString());
 	}
 
 	/// Returns true if we're at the end of file.
-	fn eof() bool {
+	fn eof() bool
+	{
 		if (mPoint < mHoleIndex) {
 			return false;
 		}
@@ -154,26 +178,33 @@ class Buffer {
 	}
 
 	/// Returns 0 if the string matches the one under the point.
-	fn cmp(s: string) i32 {
+	fn cmp(s: string) i32
+	{
 		return 0;
 	}
 
 	/// Returns 0 if the string matches the one under the point, ignoring case.
-	fn icmp(s: string) i32 {
+	fn icmp(s: string) i32
+	{
 		return 0;
 	}
 
 	/// Set the point to i. Not checked, may jump into the middle of a codepoint, etc.
-	fn seekRaw(i: size_t) {
+	fn seekRaw(i: size_t)
+	{
 		mPoint = i;
 	}
 
-	override fn toString() string {
+	override fn toString() string
+	{
 		return cast(string)(mBuffer[0 .. mHoleIndex] ~ mBuffer[mHoleIndex+mHoleSize .. $]);
 	}
 
+
+private:
 	/// Prepare to write n bytes at the point.
-	private fn expand(n: size_t) {
+	fn expand(n: size_t)
+	{
 		if (mPoint != mHoleIndex) {
 			moveHole(mPoint);
 		}
@@ -191,7 +222,8 @@ class Buffer {
 	}
 
 	/// Move the hole to the index i.
-	private fn moveHole(i: size_t) {
+	fn moveHole(i: size_t)
+	{
 		endOfHole := mHoleIndex + mHoleSize;
 		if (i > mHoleIndex) {
 			d := i - mHoleIndex;
@@ -208,9 +240,4 @@ class Buffer {
 		}
 		mHoleIndex = i;
 	}
-
-	private mBuffer:    char[];  //< The entire block of memory.
-	private mHoleIndex: size_t;  //< Where the hole starts in the buffer.
-	private mHoleSize:  size_t;  //< How many bytes long the hole is.
-	private mPoint:     size_t;  //< Insertion point.
 }

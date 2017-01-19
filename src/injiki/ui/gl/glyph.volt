@@ -10,7 +10,8 @@ import injiki.ui.gl.timer;
 import injiki.ui.gl.shader;
 
 
-class OpenGLGlyphRenderer {
+class OpenGLGlyphRenderer
+{
 public:
 	shader: GLuint;
 	sampler: GLuint;
@@ -30,7 +31,8 @@ private:
 
 
 public:
-	this(glyphW: u32, glyphH: u32) {
+	this(glyphW: u32, glyphH: u32)
+	{
 		checkOpenGL();
 		timer.setup();
 
@@ -51,7 +53,8 @@ public:
 		setScreenSize(800, 600);
 	}
 
-	fn close() {
+	fn close()
+	{
 		if (shader != 0) {
 			glDeleteProgram(shader);
 			shader = 0;
@@ -71,7 +74,8 @@ public:
 		timer.close();
 	}
 
-	fn uploadGlyph(index: u16, data: const(u8)[]) {
+	fn uploadGlyph(index: u16, data: const(u8)[])
+	{
 		glBindTexture(GL_TEXTURE_2D_ARRAY, tex);
 		glTexSubImage3D(
 			GL_TEXTURE_2D_ARRAY,  // GLenum target,
@@ -88,7 +92,8 @@ public:
 		glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 	}
 
-	fn setScreenSize(screenW: uint, screenH: uint) {
+	fn setScreenSize(screenW: uint, screenH: uint)
+	{
 		if (mScreenW == screenW &&
 		    mScreenH == screenH) {
 			return;
@@ -100,7 +105,8 @@ public:
 		calculateDerivedSizes();
 	}
 
-	fn render() {
+	fn render()
+	{
 		glUseProgram(shader);
 		glBindVertexArray(vao);
 		glBindSampler(0, sampler);
@@ -115,7 +121,8 @@ public:
 
 
 private:
-	fn createTexture() {
+	fn createTexture()
+	{
 		glGenSamplers(1, &sampler);
 		glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
@@ -137,7 +144,8 @@ private:
 		glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 	}
 
-	fn createBuffers() {
+	fn createBuffers()
+	{
 		// Setup vertex buffer and upload the data.
 		glGenBuffers(1, &buf);
 		glGenVertexArrays(1, &vao);
@@ -157,7 +165,8 @@ private:
 		glCheckError();
 	}
 
-	fn calculateDerivedSizes() {
+	fn calculateDerivedSizes()
+	{
 		numGlyphsW := (mScreenW / mGlyphW);
 		numGlyphsH := (mScreenH / mGlyphH);
 		numGlyphs := cast(GLsizei)(numGlyphsW * numGlyphsH);
@@ -178,7 +187,8 @@ private:
 		glCheckError();
 	}
 
-	fn updateNumGlyphs(numGlyphs: GLsizei) {
+	fn updateNumGlyphs(numGlyphs: GLsizei)
+	{
 		if (mNumGlyphs == numGlyphs) {
 			return;
 		}
@@ -198,7 +208,8 @@ private:
 		glCheckError();
 	}
 
-	static fn checkOpenGL() {
+	static fn checkOpenGL()
+	{
 		if (!GL_VERSION_3_3) {
 			throw failedVersion("3.3");
 		}
@@ -211,13 +222,15 @@ private:
 	}
 }
 
-fn failedVersion(ver: string) Exception {
+fn failedVersion(ver: string) Exception
+{
 	str := new string("Requires OpenGL ", ver);
 	error.writefln(str);
 	return new Exception(str);
 }
 
-fn failedExtension(ext: string) Exception {
+fn failedExtension(ext: string) Exception
+{
 	str := new string("Requires ", ext, " extension");
 	error.writefln(str);
 	return new Exception(str);

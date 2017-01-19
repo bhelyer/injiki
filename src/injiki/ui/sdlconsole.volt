@@ -11,7 +11,8 @@ import injiki.ui.console;
 import injiki.ui.gl.glyph;
 
 
-class SdlConsole : Console {
+class SdlConsole : Console
+{
 public:
 	renderer: OpenGLGlyphRenderer;
 
@@ -22,29 +23,35 @@ private:
 
 
 public:
-	this() {
+	this()
+	{
 		initSdl();
 		initGl();
 	}
 
-	override @property fn width() i32 {
+	override @property fn width() i32
+	{
 		assert(false);
 	}
 
-	override @property fn height() i32 {
+	override @property fn height() i32
+	{
 		assert(false);
 	}
 
-	override @property fn title(s: string) bool {
+	override @property fn title(s: string) bool
+	{
 		SDL_SetWindowTitle(mWindow, toStringz(s));
 		return true;
 	}
 
-	override fn refresh() {
+	override fn refresh()
+	{
 		assert(false);
 	}
 
-	override fn loop() {
+	override fn loop()
+	{
 		inLoop := true;
 		while (inLoop) {
 			handleEvents(ref inLoop);
@@ -54,7 +61,8 @@ public:
 		cleanUpSdl();
 	}
 
-	protected fn handleEvents(ref inLoop: bool) {
+	protected fn handleEvents(ref inLoop: bool)
+	{
 		SDL_Event e;
 		while (SDL_PollEvent(&e)) {
 			switch (e.type) {
@@ -64,29 +72,35 @@ public:
 		}
 	}
 
-	override fn outOfBounds(x: i32, y: i32) bool {
+	override fn outOfBounds(x: i32, y: i32) bool
+	{
 		assert(false);
 	}
 
-	override fn moveCursor(x: i32, y: i32) {
+	override fn moveCursor(x: i32, y: i32)
+	{
 		assert(false);
 	}
 
-	override fn putc(x: i32, y: i32, fg: Console.Colour, bg: Console.Colour, c: dchar) {
+	override fn putc(x: i32, y: i32, fg: Console.Colour, bg: Console.Colour, c: dchar)
+	{
 		assert(false);
 	}
 
-	override fn puts(x: i32, y: i32, fg: Console.Colour, bg: Console.Colour, s: string) {
+	override fn puts(x: i32, y: i32, fg: Console.Colour, bg: Console.Colour, s: string)
+	{
 		assert(false);
 	}
 
-	override fn getch() dchar {
+	override fn getch() dchar
+	{
 		assert(false);
 	}
 
 
 private:
-	fn initSdl() {
+	fn initSdl()
+	{
 		mWindow = SDL_CreateWindow("SdlConsole".ptr,
 			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 			800, 600, cast(u32)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE));
@@ -101,7 +115,8 @@ private:
 		assert(mContext !is null);
 	}
 
-	fn initGl() {
+	fn initGl()
+	{
 		gladLoadGL(loadGlFunc);
 		writefln("Loaded OpenGL %s.%s.", GL_MAJOR, GL_MINOR);
 
@@ -120,7 +135,8 @@ private:
 		renderer.uploadGlyph(1, data);
 	}
 
-	fn cleanUpSdl() {
+	fn cleanUpSdl()
+	{
 		if (renderer !is null) {
 			renderer.close();
 			renderer = null;
@@ -129,7 +145,8 @@ private:
 		SDL_DestroyWindow(mWindow);
 	}
 
-	fn loadGlFunc(name: string) void* {
+	fn loadGlFunc(name: string) void*
+	{
 		return SDL_GL_GetProcAddress(name.ptr);
 	}
 }

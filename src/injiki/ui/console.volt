@@ -1,12 +1,15 @@
 module injiki.ui.console;
 
+
 /**
  * An interface for a 2D field of coloured cells, that contain letters.
  * Traditionally implemented in a real console, ala curses, but could be
  * done in OpenGL etc just as easily.
  */
-interface Console {
-	struct Colour {
+interface Console
+{
+	struct Colour
+	{
 		r: u8;
 		g: u8;
 		b: u8;
