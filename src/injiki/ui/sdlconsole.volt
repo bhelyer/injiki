@@ -16,6 +16,11 @@ public:
 	renderer: OpenGLGlyphRenderer;
 
 
+private:
+	mWindow: SDL_Window*;
+	mContext: SDL_GLContext;
+
+
 public:
 	this() {
 		initSdl();
@@ -79,7 +84,9 @@ public:
 		assert(false);
 	}
 
-	private fn initSdl() {
+
+private:
+	fn initSdl() {
 		mWindow = SDL_CreateWindow("SdlConsole".ptr,
 			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
 			800, 600, cast(u32)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE));
@@ -94,7 +101,7 @@ public:
 		assert(mContext !is null);
 	}
 
-	private fn initGl() {
+	fn initGl() {
 		gladLoadGL(loadGlFunc);
 		writefln("Loaded OpenGL %s.%s.", GL_MAJOR, GL_MINOR);
 
@@ -113,7 +120,7 @@ public:
 		renderer.uploadGlyph(1, data);
 	}
 
-	private fn cleanUpSdl() {
+	fn cleanUpSdl() {
 		if (renderer !is null) {
 			renderer.close();
 			renderer = null;
@@ -122,11 +129,7 @@ public:
 		SDL_DestroyWindow(mWindow);
 	}
 
-	private fn loadGlFunc(name: string) void* {
+	fn loadGlFunc(name: string) void* {
 		return SDL_GL_GetProcAddress(name.ptr);
 	}
-
-	private mWindow: SDL_Window*;
-	private mContext: SDL_GLContext;
 }
-
