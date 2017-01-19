@@ -13,7 +13,6 @@ import injiki.ui.gl.shader;
 class GlyphRenderer
 {
 public:
-	shader: GLuint;
 	buf: GLuint;
 	vao: GLuint;
 	info: float[4];
@@ -23,6 +22,7 @@ public:
 
 private:
 	mUniform: GLuint;
+	mShader: GLuint;
 	mSampler: GLuint;
 
 	mGlyphs: GlyphStore;
@@ -43,7 +43,7 @@ public:
 		geomStr := import("glyph.geom.glsl");
 		fragStr := import("glyph.frag.glsl");
 
-		shader = makeShaderVGF("glyph", vertStr, geomStr, fragStr);
+		mShader = makeShaderVGF("glyph", vertStr, geomStr, fragStr);
 
 		glGenSamplers(1, &mSampler);
 		glSamplerParameteri(mSampler, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -66,9 +66,9 @@ public:
 			glDeleteBuffers(1, &mUniform);
 			mUniform = 0;
 		}
-		if (shader != 0) {
-			glDeleteProgram(shader);
-			shader = 0;
+		if (mShader != 0) {
+			glDeleteProgram(mShader);
+			mShader = 0;
 		}
 		if (buf != 0) {
 			glDeleteBuffers(1, &buf);
@@ -96,7 +96,7 @@ public:
 
 	fn render()
 	{
-		glUseProgram(shader);
+		glUseProgram(mShader);
 		glBindVertexArray(vao);
 		glBindSampler(0, mSampler);
 		glBindBufferBase(GL_UNIFORM_BUFFER, 0, mUniform);
