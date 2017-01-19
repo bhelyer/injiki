@@ -10,12 +10,10 @@ import injiki.ui.gl.timer;
 import injiki.ui.gl.shader;
 
 
-class OpenGLGlyphRenderer
+class GlyphRenderer
 {
 public:
 	shader: GLuint;
-	sampler: GLuint;
-	tex: GLuint;
 	buf: GLuint;
 	vao: GLuint;
 	info: float[4];
@@ -24,20 +22,21 @@ public:
 
 
 private:
+	mSampler: GLuint;
+
+	mGlyphs: GlyphStore;
 	mData: u32[];
 	mNumGlyphs: GLsizei;
-	mGlyphW, mGlyphH: u32;
 	mScreenW, mScreenH: u32;
 
 
 public:
-	this(glyphW: u32, glyphH: u32)
+	this(glyphs: GlyphStore)
 	{
 		checkOpenGL();
-		timer.setup();
 
-		mGlyphW = glyphW;
-		mGlyphH = glyphH;
+		mGlyphs = glyphs;
+		timer.setup();
 
 		vertStr := import("glyph.vert.glsl");
 		geomStr := import("glyph.geom.glsl");
@@ -45,8 +44,11 @@ public:
 
 		shader = makeShaderVGF("glyph", vertStr, geomStr, fragStr);
 
+		glGenSamplers(1, &mSampler);
+		glSamplerParameteri(mSampler, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+		glSamplerParameteri(mSampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
 		// Initial creation.
-		createTexture();
 		createBuffers();
 
 		// Set a default screen size.
@@ -55,13 +57,13 @@ public:
 
 	fn close()
 	{
+		if (mSampler != 0) {
+			glDeleteSamplers(1, &mSampler);
+			mSampler = 0;
+		}
 		if (shader != 0) {
 			glDeleteProgram(shader);
 			shader = 0;
-		}
-		if (tex != 0) {
-			glDeleteTextures(1, &tex);
-			tex = 0;
 		}
 		if (buf != 0) {
 			glDeleteBuffers(1, &buf);
@@ -72,24 +74,6 @@ public:
 			vao = 0;
 		}
 		timer.close();
-	}
-
-	fn uploadGlyph(index: u16, data: const(u8)[])
-	{
-		glBindTexture(GL_TEXTURE_2D_ARRAY, tex);
-		glTexSubImage3D(
-			GL_TEXTURE_2D_ARRAY,  // GLenum target,
- 			0,                    // GLint level,
-			0,                    // GLint xoffset,
- 			0,                    // GLint yoffset,
- 			cast(GLint)index,     // GLint zoffset,
- 			cast(GLsizei)mGlyphW, //GLsizei width,
- 			cast(GLsizei)mGlyphH, //GLsizei height,
- 			1,                    //GLsizei depth,
- 			GL_RED,               //GLenum format,
- 			GL_UNSIGNED_BYTE,     //GLenum type,
- 			cast(const(void)*)data.ptr);
-		glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 	}
 
 	fn setScreenSize(screenW: uint, screenH: uint)
@@ -109,8 +93,8 @@ public:
 	{
 		glUseProgram(shader);
 		glBindVertexArray(vao);
-		glBindSampler(0, sampler);
-		glBindTexture(GL_TEXTURE_2D_ARRAY, tex);
+		glBindSampler(0, mSampler);
+		glBindTexture(GL_TEXTURE_2D_ARRAY, mGlyphs.mTexture);
 		glDrawArrays(GL_POINTS, 0, mNumGlyphs);
 		glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
 		glBindSampler(0, 0);
@@ -121,29 +105,6 @@ public:
 
 
 private:
-	fn createTexture()
-	{
-		glGenSamplers(1, &sampler);
-		glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-		// Setup vertex buffer and upload the data.
-		glGenTextures(1, &tex);
-		glBindTexture(GL_TEXTURE_2D_ARRAY, tex);
-		glTexImage3D(
-			GL_TEXTURE_2D_ARRAY,  // GLenum target,
- 			0,                    // GLint level,
- 			GL_R8,                // GLint internalFormat,
- 			cast(GLsizei)mGlyphW, // GLsizei width,
- 			cast(GLsizei)mGlyphH, // GLsizei height,
- 			256,                  // GLsizei depth,
- 			0,                    // GLint border,
- 			GL_RED,               // GLenum format,
- 			GL_UNSIGNED_BYTE,     // GLenum type,
- 			null);
-		glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
-	}
-
 	fn createBuffers()
 	{
 		// Setup vertex buffer and upload the data.
@@ -167,18 +128,18 @@ private:
 
 	fn calculateDerivedSizes()
 	{
-		numGlyphsW := (mScreenW / mGlyphW);
-		numGlyphsH := (mScreenH / mGlyphH);
+		numGlyphsW := (mScreenW / mGlyphs.mGlyphW);
+		numGlyphsH := (mScreenH / mGlyphs.mGlyphH);
 		numGlyphs := cast(GLsizei)(numGlyphsW * numGlyphsH);
 
 		updateNumGlyphs(numGlyphs);
 
-		pixelsW := numGlyphsW * mGlyphW;
-		pixelsH := numGlyphsH * mGlyphH;
+		pixelsW := numGlyphsW * mGlyphs.mGlyphW;
+		pixelsH := numGlyphsH * mGlyphs.mGlyphH;
 
-		info[0] = cast(float)mGlyphW / cast(float)pixelsW * 2.f;
-		info[1] = cast(float)mGlyphH / cast(float)pixelsH * 2.f;
-		info[2] = cast(float)(pixelsW / mGlyphW);
+		info[0] = cast(float)mGlyphs.mGlyphW / cast(float)pixelsW * 2.f;
+		info[1] = cast(float)mGlyphs.mGlyphH / cast(float)pixelsH * 2.f;
+		info[2] = cast(float)(pixelsW / mGlyphs.mGlyphW);
 
 		glUseProgram(shader);
 		loc := glGetUniformLocation(shader, "info");
@@ -234,4 +195,82 @@ fn failedExtension(ext: string) Exception
 	str := new string("Requires ", ext, " extension");
 	error.writefln(str);
 	return new Exception(str);
+}
+
+/**
+ * Class that represent one size of glyphs to be used for rendering.
+ */
+class GlyphStore
+{
+private:
+	mTexture: GLuint;
+	mSampler: GLuint;
+	mGlyphW, mGlyphH: u32;
+
+
+public:
+	this(glyphW: u32, glyphH: u32)
+	{
+		mGlyphW = glyphW;
+		mGlyphH = glyphH;
+
+		createTexture();
+	}
+
+	fn close()
+	{
+		if (mTexture != 0) {
+			glDeleteTextures(1, &mTexture);
+			mTexture = 0;
+		}
+	}
+
+	fn uploadGlyph(index: u16, data: const(u8)[])
+	{
+		glBindTexture(GL_TEXTURE_2D_ARRAY, mTexture);
+		glTexSubImage3D(
+			GL_TEXTURE_2D_ARRAY,  // GLenum target,
+ 			0,                    // GLint level,
+			0,                    // GLint xoffset,
+ 			0,                    // GLint yoffset,
+ 			cast(GLint)index,     // GLint zoffset,
+ 			cast(GLsizei)mGlyphW, // GLsizei width,
+ 			cast(GLsizei)mGlyphH, // GLsizei height,
+ 			1,                    // GLsizei depth,
+ 			GL_RED,               // GLenum format,
+ 			GL_UNSIGNED_BYTE,     // GLenum type,
+ 			cast(const(void)*)data.ptr);
+		glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+	}
+
+
+private:
+	fn createTexture()
+	{
+		// Setup vertex buffer and upload the data.
+		glGenTextures(1, &mTexture);
+		glBindTexture(GL_TEXTURE_2D_ARRAY, mTexture);
+		glTexImage3D(
+			GL_TEXTURE_2D_ARRAY,  // GLenum target,
+ 			0,                    // GLint level,
+ 			GL_R8,                // GLint internalFormat,
+ 			cast(GLsizei)mGlyphW, // GLsizei width,
+ 			cast(GLsizei)mGlyphH, // GLsizei height,
+ 			256,                  // GLsizei depth,
+ 			0,                    // GLint border,
+ 			GL_RED,               // GLenum format,
+ 			GL_UNSIGNED_BYTE,     // GLenum type,
+ 			null);
+		glBindTexture(GL_TEXTURE_2D_ARRAY, 0);
+	}
+}
+
+/**
+ * A number of glyphs that is renderabler.
+ *
+ * WIP.
+ */
+class GlyphScreen
+{
+
 }

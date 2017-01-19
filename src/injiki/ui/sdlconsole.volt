@@ -13,11 +13,9 @@ import injiki.ui.gl.glyph;
 
 class SdlConsole : Console
 {
-public:
-	renderer: OpenGLGlyphRenderer;
-
-
 private:
+	mRenderer: GlyphRenderer;
+	mGlyphs: GlyphStore;
 	mWindow: SDL_Window*;
 	mContext: SDL_GLContext;
 
@@ -55,7 +53,7 @@ public:
 		inLoop := true;
 		while (inLoop) {
 			handleEvents(ref inLoop);
-			renderer.render();
+			mRenderer.render();
 			SDL_GL_SwapWindow(mWindow);
 		}
 		cleanUpSdl();
@@ -120,10 +118,9 @@ private:
 		gladLoadGL(loadGlFunc);
 		writefln("Loaded OpenGL %s.%s.", GL_MAJOR, GL_MINOR);
 
-		// Setup glyph size and create renderer.
+		// Setup glyph size and store
 		w, h: u32; w = 8; h = 10;
-		renderer = new OpenGLGlyphRenderer(w, h);
-
+		mGlyphs := new GlyphStore(w, h);
 		// Temporary hack to upload a glyph.
 		numPixels := w * h;
 		data := new u8[](numPixels);
@@ -132,14 +129,21 @@ private:
 			d = cast(u8)(i * inc);
 		}
 
-		renderer.uploadGlyph(1, data);
+		mGlyphs.uploadGlyph(1, data);
+
+		// And then setup the renderer.
+		mRenderer = new GlyphRenderer(mGlyphs);
 	}
 
 	fn cleanUpSdl()
 	{
-		if (renderer !is null) {
-			renderer.close();
-			renderer = null;
+		if (mGlyphs !is null) {
+			mGlyphs.close();
+			mGlyphs = null;
+		}
+		if (mRenderer !is null) {
+			mRenderer.close();
+			mRenderer = null;
 		}
 		SDL_GL_DeleteContext(mContext);
 		SDL_DestroyWindow(mWindow);
