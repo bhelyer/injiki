@@ -6,29 +6,25 @@ import core.exception;
 import lib.gl;
 import watt.io;
 import injiki.ui.gl.util;
-import injiki.ui.gl.timer;
 import injiki.ui.gl.shader;
 
 
 class GlyphRenderer
 {
-public:
-	buf: GLuint;
-	vao: GLuint;
-	info: float[4];
-
-	timer: Timer;
-
-
 private:
-	mUniform: GLuint;
-	mShader: GLuint;
 	mSampler: GLuint;
+	mShader: GLuint;
+
+	mData: u32[];
+	mInfo: float[4];
+	mScreenW, mScreenH: u32;
+	mNumGlyphs: GLsizei;
 
 	mGlyphs: GlyphStore;
-	mData: u32[];
-	mNumGlyphs: GLsizei;
-	mScreenW, mScreenH: u32;
+
+	mUniform: GLuint;
+	mBuffer: GLuint;
+	mVao: GLuint;
 
 
 public:
@@ -37,7 +33,6 @@ public:
 		checkOpenGL();
 
 		mGlyphs = glyphs;
-		timer.setup();
 
 		vertStr := import("glyph.vert.glsl");
 		geomStr := import("glyph.geom.glsl");
@@ -70,15 +65,14 @@ public:
 			glDeleteProgram(mShader);
 			mShader = 0;
 		}
-		if (buf != 0) {
-			glDeleteBuffers(1, &buf);
-			buf = 0;
+		if (mBuffer != 0) {
+			glDeleteBuffers(1, &mBuffer);
+			mBuffer = 0;
 		}
-		if (vao != 0) {
-			glDeleteVertexArrays(1, &vao);
-			vao = 0;
+		if (mVao != 0) {
+			glDeleteVertexArrays(1, &mVao);
+			mVao = 0;
 		}
-		timer.close();
 	}
 
 	fn setScreenSize(screenW: uint, screenH: uint)
@@ -97,7 +91,7 @@ public:
 	fn render()
 	{
 		glUseProgram(mShader);
-		glBindVertexArray(vao);
+		glBindVertexArray(mVao);
 		glBindSampler(0, mSampler);
 		glBindBufferBase(GL_UNIFORM_BUFFER, 0, mUniform);
 		glBindTexture(GL_TEXTURE_2D_ARRAY, mGlyphs.mTexture);
@@ -115,13 +109,13 @@ private:
 	fn createBuffers()
 	{
 		// Setup vertex buffer and upload the data.
-		glGenBuffers(1, &buf);
+		glGenBuffers(1, &mBuffer);
 		glGenBuffers(1, &mUniform);
-		glGenVertexArrays(1, &vao);
+		glGenVertexArrays(1, &mVao);
 
 		// And the darkness bind them.
-		glBindVertexArray(vao);
-		glBindBuffer(GL_ARRAY_BUFFER, buf);
+		glBindVertexArray(mVao);
+		glBindBuffer(GL_ARRAY_BUFFER, mBuffer);
 
 		glBufferData(GL_ARRAY_BUFFER, 256, null, GL_STATIC_DRAW);
 
@@ -152,12 +146,12 @@ private:
 		pixelsW := numGlyphsW * mGlyphs.mGlyphW;
 		pixelsH := numGlyphsH * mGlyphs.mGlyphH;
 
-		info[0] = cast(float)mGlyphs.mGlyphW / cast(float)pixelsW * 2.f;
-		info[1] = cast(float)mGlyphs.mGlyphH / cast(float)pixelsH * 2.f;
-		info[2] = cast(float)(pixelsW / mGlyphs.mGlyphW);
+		mInfo[0] = cast(float)mGlyphs.mGlyphW / cast(float)pixelsW * 2.f;
+		mInfo[1] = cast(float)mGlyphs.mGlyphH / cast(float)pixelsH * 2.f;
+		mInfo[2] = cast(float)(pixelsW / mGlyphs.mGlyphW);
 
 		glBindBuffer(GL_UNIFORM_BUFFER, mUniform);
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, 4 * 4, cast(void*)info.ptr);
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, 4 * 4, cast(void*)mInfo.ptr);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);
 		glCheckError();
 	}
@@ -177,7 +171,7 @@ private:
 			d = cast(u32)i;
 		}
 
-		glBindBuffer(GL_ARRAY_BUFFER, buf);
+		glBindBuffer(GL_ARRAY_BUFFER, mBuffer);
 		glBufferData(GL_ARRAY_BUFFER, mNumGlyphs * 4, cast(void*)mData.ptr, GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glCheckError();
