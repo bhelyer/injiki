@@ -149,7 +149,13 @@ private:
  */
 class GlyphGrid
 {
+public:
+	numGlyphsX, numGlyphsY: u32;
+
+
 private:
+	mDirty: bool;
+
 	mRenderer: GlyphRenderer;
 	mGlyphs: GlyphStore;
 
@@ -176,6 +182,7 @@ public:
 
 		// Set a default screen size.
 		setScreenSize(width, height);
+		mDirty = true;
 	}
 
 	fn close()
@@ -194,6 +201,17 @@ public:
 		}
 	}
 
+	fn put(x: u32, y: u32, fg: u8, bg: u8, glyph: u16)
+	{
+		if (x >= numGlyphsX || y >= numGlyphsY) {
+			return;
+		}
+
+		val := bg << 24u | fg << 16u | glyph;
+		mData[numGlyphsX * y + x] = val;
+		mDirty = true;
+	}
+
 	fn setScreenSize(screenW: uint, screenH: uint)
 	{
 		if (mScreenW == screenW &&
@@ -209,6 +227,10 @@ public:
 
 	fn render()
 	{
+		if (mDirty) {
+			uploadData();
+		}
+
 		glUseProgram(mRenderer.mShader);
 		glBindVertexArray(mVao);
 		glBindSampler(0, mRenderer.mSampler);
@@ -254,13 +276,20 @@ private:
 		glCheckError();
 	}
 
+	fn uploadData()
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, mBuffer);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, mNumGlyphs * 4, cast(void*)mData.ptr);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+	}
+
 	fn calculateDerivedSizes()
 	{
 		numGlyphsW := (mScreenW / mGlyphs.mGlyphW);
 		numGlyphsH := (mScreenH / mGlyphs.mGlyphH);
 		numGlyphs := cast(GLsizei)(numGlyphsW * numGlyphsH);
 
-		updateNumGlyphs(numGlyphs);
+		updateNumGlyphs(numGlyphs, numGlyphsW, numGlyphsH);
 
 		pixelsW := numGlyphsW * mGlyphs.mGlyphW;
 		pixelsH := numGlyphsH * mGlyphs.mGlyphH;
@@ -268,6 +297,7 @@ private:
 		mInfo[0] = cast(float)mGlyphs.mGlyphW / cast(float)pixelsW * 2.f;
 		mInfo[1] = cast(float)mGlyphs.mGlyphH / cast(float)pixelsH * 2.f;
 		mInfo[2] = cast(float)(pixelsW / mGlyphs.mGlyphW);
+		mInfo[3] = 0.f;
 
 		glBindBuffer(GL_UNIFORM_BUFFER, mUniform);
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, 4 * 4, cast(void*)mInfo.ptr);
@@ -275,9 +305,24 @@ private:
 		glCheckError();
 	}
 
-	fn updateNumGlyphs(numGlyphs: GLsizei)
+	fn updateNumGlyphs(numGlyphs: GLsizei, numGlyphsW: u32, numGlyphsH: u32)
 	{
+		if (numGlyphsX == numGlyphsW &&
+		    numGlyphsY == numGlyphsH &&
+		    mNumGlyphs == numGlyphs) {
+			return;
+		}
+
+		numGlyphsX = numGlyphsW;
+		numGlyphsY = numGlyphsH;
+
 		if (mNumGlyphs == numGlyphs) {
+
+			// Reset the array
+			foreach (ref d; mData) {
+				d = 0;
+			}
+
 			return;
 		}
 
@@ -285,14 +330,8 @@ private:
 		mNumGlyphs = numGlyphs;
 		mData = new u32[](mNumGlyphs);
 
-		// Temporary hack with initial data.
-		foreach (i, ref d; mData) {
-			d = cast(u32)i;
-		}
-
 		glBindBuffer(GL_ARRAY_BUFFER, mBuffer);
 		glBufferData(GL_ARRAY_BUFFER, mNumGlyphs * 4, cast(void*)mData.ptr, GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glCheckError();
 	}
 }

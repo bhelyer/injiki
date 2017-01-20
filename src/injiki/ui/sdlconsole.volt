@@ -132,6 +132,12 @@ private:
 
 		// And then setup the renderer.
 		mScreen = new GlyphGrid(mRenderer, mGlyphs, 800, 600);
+		counter: u8;
+		foreach (y; 0 .. mScreen.numGlyphsY) {
+			foreach (x; 0 .. mScreen.numGlyphsX) {
+				mScreen.put(x, y, 0, 0, counter++);
+			}
+		}
 	}
 
 	fn cleanUpSdl()
