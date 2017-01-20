@@ -9,6 +9,7 @@ import lib.gl.loader;
 
 import injiki.ui.console;
 import injiki.ui.gl.glyph;
+import injiki.ui.gl.vga;
 
 
 class SdlConsole : Console
@@ -124,17 +125,10 @@ private:
 		mRenderer := new GlyphRenderer();
 
 		// Setup glyph size and store
-		w, h: u32; w = 8; h = 10;
-		mGlyphs := new GlyphStore(w, h);
-		// Temporary hack to upload a glyph.
-		numPixels := w * h;
-		data := new u8[](numPixels);
-		inc :=  255.f / (numPixels - 1);
-		foreach (i, ref d; data) {
-			d = cast(u8)(i * inc);
+		mGlyphs := new GlyphStore(GlyphWidth, GlyphHeight);
+		foreach (index; 0u .. 256u) {
+			mGlyphs.uploadVGAGlyph(cast(u8)index, cast(u16)index);
 		}
-
-		mGlyphs.uploadGlyph(1, data);
 
 		// And then setup the renderer.
 		mScreen = new GlyphGrid(mRenderer, mGlyphs, 800, 600);
