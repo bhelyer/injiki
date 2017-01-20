@@ -18,6 +18,7 @@ private:
 	mSampler: GLuint;
 	mShader: GLuint;
 
+
 public:
 	this()
 	{
@@ -29,6 +30,15 @@ public:
 
 		mShader = makeShaderVGF("glyph", vertStr, geomStr, fragStr);
 
+		// Because mac doesn't support GL_ARB_shading_language_420pack.
+		index := glGetUniformBlockIndex(mShader, "Uniforms");
+		glUniformBlockBinding(mShader, index, 0);
+		glUseProgram(mShader);
+		loc := glGetUniformLocation(mShader, "texGlyphs");
+		glUniform1i(loc, 0);
+		glUseProgram(0);
+
+		// Create a sampler object.
 		glGenSamplers(1, &mSampler);
 		glSamplerParameteri(mSampler, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glSamplerParameteri(mSampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
