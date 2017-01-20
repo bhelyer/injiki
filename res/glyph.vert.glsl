@@ -1,13 +1,12 @@
 #version 330 core
 #extension GL_ARB_explicit_attrib_location : require
 #extension GL_ARB_separate_shader_objects : require
-#extension GL_ARB_shading_language_420pack : require
 
 layout (location = 0) in vec4 inData;
 layout (location = 0) out vec4 outPosition;
 layout (location = 1) out vec3 outGlyph;
 
-layout (binding = 0, std140) uniform Uniforms {
+layout (std140) uniform Uniforms {
 	vec4 info;
 };
 
