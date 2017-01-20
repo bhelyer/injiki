@@ -9,7 +9,10 @@ layout (location = 1) in vec3[] inGlyph;
 layout (triangle_strip, max_vertices = 4) out;
 layout (location = 0) out vec3 outGlyph;
 layout (location = 1) out vec2 outUV;
-out vec4 gl_Position;
+out gl_PerVertex
+{
+	vec4 gl_Position;
+};
 
 #define minX inPosition[0].x
 #define minY inPosition[0].y
