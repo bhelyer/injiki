@@ -31,9 +31,6 @@ interface Console
 	/// Refresh the display with any changes made since the last call to refresh.
 	fn refresh();
 
-	/// Run in a loop until exit.
-	fn loop();
-
 	/**
 	 * Given a coordinate of (x, y) (0,0 is top left), returns if
 	 * it is out of bounds.
