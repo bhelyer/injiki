@@ -8,6 +8,7 @@ import lib.gl;
 import lib.gl.loader;
 
 import injiki.ui.console;
+import injiki.ui.control;
 import injiki.ui.gl.glyph;
 import injiki.ui.gl.vga;
 
@@ -21,11 +22,13 @@ private:
 
 	mWindow: SDL_Window*;
 	mContext: SDL_GLContext;
+	mControl: Control;
 
 
 public:
 	this()
 	{
+		mControl = new Control();
 		initSdl();
 		initGl();
 	}
@@ -55,22 +58,14 @@ public:
 	{
 		inLoop := true;
 		while (inLoop) {
-			handleEvents(ref inLoop);
+			SDL_Event e;
+			while (SDL_PollEvent(&e)) {
+				handleEvents(ref e, ref inLoop);
+			}
 			mGrid.render();
 			SDL_GL_SwapWindow(mWindow);
 		}
 		cleanUpSdl();
-	}
-
-	protected fn handleEvents(ref inLoop: bool)
-	{
-		SDL_Event e;
-		while (SDL_PollEvent(&e)) {
-			switch (e.type) {
-			case SDL_QUIT: inLoop = false; break;
-			default: break;
-			}
-		}
 	}
 
 	override fn outOfBounds(x: i32, y: i32) bool
@@ -105,6 +100,21 @@ public:
 
 
 private:
+	fn handleEvents(ref e: SDL_Event, ref inLoop: bool)
+	{
+		switch (e.type) {
+		case SDL_QUIT: inLoop = false; break;
+		case SDL_TEXTINPUT:
+			i: size_t;
+			for (; i < e.text.text.length && e.text.text[i]; i++) {}
+			if (i > 0) {
+				mControl.onText(this, e.text.text[0 .. i]);
+			}
+			break;
+		default:
+		}
+	}
+
 	fn initSdl()
 	{
 		mWindow = SDL_CreateWindow("SdlConsole".ptr,
