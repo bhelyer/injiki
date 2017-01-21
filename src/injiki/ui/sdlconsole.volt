@@ -17,7 +17,7 @@ class SdlConsole : Console
 private:
 	mRenderer: GlyphRenderer;
 	mGlyphs: GlyphStore;
-	mScreen: GlyphGrid;
+	mGrid: GlyphGrid;
 
 	mWindow: SDL_Window*;
 	mContext: SDL_GLContext;
@@ -56,7 +56,7 @@ public:
 		inLoop := true;
 		while (inLoop) {
 			handleEvents(ref inLoop);
-			mScreen.render();
+			mGrid.render();
 			SDL_GL_SwapWindow(mWindow);
 		}
 		cleanUpSdl();
@@ -75,7 +75,9 @@ public:
 
 	override fn outOfBounds(x: i32, y: i32) bool
 	{
-		assert(false);
+		return x < 0 || y < 0 ||
+			cast(u32)x >= mGrid.numGlyphsX ||
+			cast(u32)y >= mGrid.numGlyphsY;
 	}
 
 	override fn moveCursor(x: i32, y: i32)
@@ -85,7 +87,10 @@ public:
 
 	override fn putc(x: i32, y: i32, fg: Console.Colour, bg: Console.Colour, c: dchar)
 	{
-		assert(false);
+		if (outOfBounds(x, y)) {
+			return;
+		}
+		mGrid.put(cast(u32)x, cast(u32)y, 0, 0, cast(u8)c);
 	}
 
 	override fn puts(x: i32, y: i32, fg: Console.Colour, bg: Console.Colour, s: string)
@@ -131,11 +136,11 @@ private:
 		}
 
 		// And then setup the renderer.
-		mScreen = new GlyphGrid(mRenderer, mGlyphs, 800, 600);
+		mGrid = new GlyphGrid(mRenderer, mGlyphs, 800, 600);
 		counter: u8;
-		foreach (y; 0 .. mScreen.numGlyphsY) {
-			foreach (x; 0 .. mScreen.numGlyphsX) {
-				mScreen.put(x, y, 0, 0, counter++);
+		foreach (y; 0 .. mGrid.numGlyphsY) {
+			foreach (x; 0 .. mGrid.numGlyphsX) {
+				mGrid.put(x, y, 0, 0, counter++);
 			}
 		}
 	}
