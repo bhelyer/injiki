@@ -61,9 +61,19 @@ public:
 	{
 		while (mLooping) {
 			SDL_Event e;
-			while (SDL_PollEvent(&e)) {
-				handleEvents(ref e);
+
+			// Block until next event.
+			if (SDL_WaitEvent(&e) != 1) {
+				writefln("Error");
+				break;
 			}
+
+			// Dispatch that event and then drain all other events.
+			do {
+				handleEvents(ref e);
+			} while (SDL_PollEvent(&e));
+
+			// Redraw the window.
 			mWin.mRender();
 			SDL_GL_SwapWindow(mWindow);
 		}
