@@ -1,0 +1,10 @@
+{
+	"pattern": "test.volt",
+	"testCommandPrefix": "//T ",
+	"macros": {
+		"default": [
+			"//T run:volta -o %t %s src/injiki/text/buffer.volt src/injiki/text/util.volt",
+			"//T run:%t"
+		]
+	}
+}
