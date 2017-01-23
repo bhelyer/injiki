@@ -120,12 +120,35 @@ public:
 		return c;
 	}
 
+	/// Move the point back one character.
+	fn back()
+	{
+		do {
+			if (mPoint == 0) {
+				return;
+			} else if (mPoint == mHoleIndex+mHoleSize) {
+				mPoint = mHoleIndex;
+			}
+			mPoint--;
+		} while ((mBuffer[mPoint] & 0xC0) == 0x80);
+	}
+
 	/// Call dgt with getc's result until 'c' is at the point, or EOF is reached.
 	fn getUntil(c: dchar, dgt: dg(dchar))
 	{
 		while (!eof() && rc() != c) {
 			dgt(getc());
 		}
+	}
+
+	/// Call back, call dgt with rc's result until the point is 'c', or 0.
+	fn getBackwardsUntil(c: dchar, dgt: dg(dchar))
+	{
+		//while (mPoint > 0 && rc() != c) {
+		do {
+			back();
+			dgt(rc());
+		} while (mPoint > 0 && rc() != c);
 	}
 
 	/// Write a character at the point and advance it.
@@ -193,6 +216,12 @@ public:
 	fn seekRaw(i: size_t)
 	{
 		mPoint = i;
+	}
+
+	// Return the current point.
+	fn point() size_t
+	{
+		return mPoint;
 	}
 
 	override fn toString() string

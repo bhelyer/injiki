@@ -1,6 +1,7 @@
 module injiki.core;
 
 import injiki.core.sdl;
+import injiki.ui.key;
 
 
 abstract class Core
@@ -45,4 +46,5 @@ abstract class Window
 	abstract @property fn onMove(dgt: dg(int, int));
 	abstract @property fn onButton(dgt: dg(int));
 	abstract @property fn onText(dgt: dg(scope const(char)[]));
+	abstract @property fn onKeyDown(dgt: dg(Key));
 }

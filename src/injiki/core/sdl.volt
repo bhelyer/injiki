@@ -8,6 +8,7 @@ import amp.sdl2;
 import watt.io;
 import watt.conv;
 import injiki.core;
+import injiki.ui.key;
 
 
 class CoreSDL : Core
@@ -97,6 +98,9 @@ private:
 				mWin.mText(e.text.text[0 .. i]);
 			}
 			break;
+		case SDL_KEYDOWN:
+			mWin.mKeyDown(translateKey(e.key.keysym.sym));
+			break;
 		default:
 		}
 	}
@@ -152,6 +156,7 @@ private:
 	mMove: dg(int, int);
 	mButton: dg(int);
 	mText: dg(scope const(char)[]);
+	mKeyDown: dg(Key);
 
 
 public:
@@ -166,6 +171,7 @@ public:
 		mMove = StubMove;
 		mButton = StubButton;
 		mText = StubText;
+		mKeyDown = StubKeyDown;
 	}
 
 	override fn fullscreen()
@@ -198,6 +204,8 @@ public:
 	{ if (dgt is null) { mButton = StubButton; } else { mButton = dgt; } }
 	override @property fn onText(dgt: dg(scope const(char)[]))
 	{ if (dgt is null) { mText = StubText; } else { mText = dgt; } }
+	override @property fn onKeyDown(dgt: dg(Key))
+	{ if (dgt is null) { mKeyDown = StubKeyDown; } else { mKeyDown = dgt; } }
 
 	fn StubDestroy() {}
 	fn StubRender() {}
@@ -206,4 +214,5 @@ public:
 	fn StubMove(int, int) {}
 	fn StubButton(int) {}
 	fn StubText(scope const(char)[]) {}
+	fn StubKeyDown(Key) {}
 }

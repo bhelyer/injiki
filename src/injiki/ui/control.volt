@@ -3,8 +3,10 @@ module injiki.ui.control;
 import watt.io;
 
 import injiki.core;
+import injiki.ui.key;
 import injiki.ui.gl.glyph;
 import injiki.ui.gl.vga;
+import injiki.ui.components.component;
 
 
 class Control
@@ -17,6 +19,8 @@ private:
 	mCore: Core;
 	mWin: Window;
 
+	mComponents: Component[];
+
 
 public:
 	this(win: Window)
@@ -25,8 +29,14 @@ public:
 		mWin.onText = onText;
 		mWin.onRender = onRender;
 		mWin.onDestroy = onDestroy;
+		mWin.onKeyDown = onKeyDown;
 
 		initGl();
+	}
+
+	fn addComponent(component: Component)
+	{
+		mComponents ~= component;
 	}
 
 
@@ -52,12 +62,22 @@ private:
 
 	fn onRender()
 	{
+		foreach (component; mComponents) {
+			component.render(mGrid);
+		}
 		mGrid.render();
 	}
 
 	fn onText(str: const(char)[])
 	{
 		mGrid.put(0, 0, 0, 0, cast(u8)str[0]);
+	}
+
+	fn onKeyDown(key: Key)
+	{
+		foreach (component; mComponents) {
+			component.onKeyDown(key);
+		}
 	}
 
 	fn initGl()
