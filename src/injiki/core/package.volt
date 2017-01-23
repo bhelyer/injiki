@@ -46,5 +46,6 @@ abstract class Window
 	abstract @property fn onMove(dgt: dg(int, int));
 	abstract @property fn onButton(dgt: dg(int));
 	abstract @property fn onText(dgt: dg(scope const(char)[]));
+	abstract @property fn onKeyUp(dgt: dg(Key));
 	abstract @property fn onKeyDown(dgt: dg(Key));
 }
