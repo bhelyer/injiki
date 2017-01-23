@@ -1,8 +1,7 @@
 module injiki.app;
 
 import injiki.text.buffer;
-import injiki.ui.console;
-import injiki.ui.windowconsole;
+import injiki.ui.control;
 import watt.io;
 import watt.text.format;
 import injiki.core;
@@ -12,7 +11,7 @@ class App
 {
 private:
 	mCore: Core;
-	mConsole: WindowConsole;
+	mConsole: Control;
 	mBuffer: Buffer;
 
 
@@ -21,8 +20,8 @@ public:
 	{
 		mCore = Core.create();
 		win := mCore.createWindow();
-		mConsole = new WindowConsole(win);
-		mConsole.title = "印字機";
+		win.title = "印字機";
+		mConsole = new Control(win);
 		mBuffer = new Buffer();
 	}
 

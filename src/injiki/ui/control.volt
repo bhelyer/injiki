@@ -1,4 +1,4 @@
-module injiki.ui.windowconsole;
+module injiki.ui.control;
 
 import watt.io;
 
@@ -8,7 +8,7 @@ import injiki.ui.gl.glyph;
 import injiki.ui.gl.vga;
 
 
-class WindowConsole : Console
+class Control
 {
 private:
 	mRenderer: GlyphRenderer;
@@ -30,59 +30,15 @@ public:
 		initGl();
 	}
 
-	override @property fn width() i32
-	{
-		assert(false);
-	}
 
-	override @property fn height() i32
-	{
-		assert(false);
-	}
-
-	override @property fn title(s: string) bool
-	{
-		mWin.title = s;
-		return true;
-	}
-
-	override fn refresh()
-	{
-		assert(false);
-	}
-
-	override fn outOfBounds(x: i32, y: i32) bool
+private:
+	fn outOfBounds(x: i32, y: i32) bool
 	{
 		return x < 0 || y < 0 ||
 			cast(u32)x >= mGrid.numGlyphsX ||
 			cast(u32)y >= mGrid.numGlyphsY;
 	}
 
-	override fn moveCursor(x: i32, y: i32)
-	{
-		assert(false);
-	}
-
-	override fn putc(x: i32, y: i32, fg: Console.Colour, bg: Console.Colour, c: dchar)
-	{
-		if (outOfBounds(x, y)) {
-			return;
-		}
-		mGrid.put(cast(u32)x, cast(u32)y, 0, 0, cast(u8)c);
-	}
-
-	override fn puts(x: i32, y: i32, fg: Console.Colour, bg: Console.Colour, s: string)
-	{
-		assert(false);
-	}
-
-	override fn getch() dchar
-	{
-		assert(false);
-	}
-
-
-private:
 	fn onDestroy()
 	{
 		if (mGlyphs !is null) {
