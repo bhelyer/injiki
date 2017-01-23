@@ -17,13 +17,13 @@ enum Key
 fn translateKey(sdlkc: SDL_Keycode) Key
 {
 	switch (sdlkc) {
-	case SDLK_PAGEDOWN:				return Key.PageDown;
-	case SDLK_PAGEUP:				return Key.PageUp;
-	case SDLK_UP:					return Key.Up;
-	case SDLK_DOWN:					return Key.Down;
-	case SDLK_LEFT:					return Key.Left;
-	case SDLK_RIGHT:				return Key.Right;
-	default:						return Key.Unknown;
+	case SDLK_PAGEDOWN: return Key.PageDown;
+	case SDLK_PAGEUP:   return Key.PageUp;
+	case SDLK_UP:       return Key.Up;
+	case SDLK_DOWN:     return Key.Down;
+	case SDLK_LEFT:     return Key.Left;
+	case SDLK_RIGHT:    return Key.Right;
+	default:            return Key.Unknown;
 	}
 	assert(false);
 }
