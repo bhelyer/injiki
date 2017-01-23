@@ -3,7 +3,6 @@ module injiki.ui.control;
 import watt.io;
 
 import injiki.core;
-import injiki.ui.console;
 import injiki.ui.gl.glyph;
 import injiki.ui.gl.vga;
 
