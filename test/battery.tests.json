@@ -3,7 +3,7 @@
 	"testCommandPrefix": "//T ",
 	"macros": {
 		"default": [
-			"//T run:volta -o %t %s src/injiki/text/buffer.volt src/injiki/text/util.volt",
+			"//T run:volta -o %t %s %S/../../../src/injiki/text/buffer.volt %S/../../../src/injiki/text/util.volt",
 			"//T run:%t"
 		]
 	}
