@@ -13,6 +13,26 @@ enum Key
 	Right,
 }
 
+enum Mod : u16
+{
+	None,
+	LeftShift = KMOD_LSHIFT,
+	RightShift = KMOD_RSHIFT,
+	LeftControl = KMOD_LCTRL,
+	RightControl = KMOD_RCTRL,
+	LeftAlt = KMOD_LALT,
+	RightAlt = KMOD_RALT,
+	LeftGui = KMOD_LGUI,
+	RightGui = KMOD_RGUI,
+	Numlock = KMOD_NUM,
+	Capslock = KMOD_CAPS,
+	AltGr = KMOD_MODE,
+	Control = KMOD_CTRL,
+	Shift = KMOD_SHIFT,
+	Alt = KMOD_ALT,
+	Gui = KMOD_GUI
+}
+
 /// Translate an SDL_Keycode to an Injiki Key enum value.
 fn translateKey(sdlkc: SDL_Keycode) Key
 {

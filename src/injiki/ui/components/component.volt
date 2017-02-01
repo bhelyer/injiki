@@ -16,5 +16,5 @@ interface Component
 	/**
 	 * Received when a key is pressed.
 	 */
-	fn onKeyDown(key: Key);
+	fn onKeyDown(key: Key, mod: Mod);
 }

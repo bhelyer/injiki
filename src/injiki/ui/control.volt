@@ -73,10 +73,10 @@ private:
 		mGrid.put(0, 0, 0, 0, cast(u8)str[0]);
 	}
 
-	fn onKeyDown(key: Key)
+	fn onKeyDown(key: Key, mod: Mod)
 	{
 		foreach (component; mComponents) {
-			component.onKeyDown(key);
+			component.onKeyDown(key, mod);
 		}
 	}
 

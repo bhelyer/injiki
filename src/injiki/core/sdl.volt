@@ -98,10 +98,10 @@ private:
 			}
 			break;
 		case SDL_KEYUP:
-			mWin.mKeyUp(translateKey(e.key.keysym.sym));
+			mWin.mKeyUp(translateKey(e.key.keysym.sym), e.key.keysym.mod);
 			break;
 		case SDL_KEYDOWN:
-			mWin.mKeyDown(translateKey(e.key.keysym.sym));
+			mWin.mKeyDown(translateKey(e.key.keysym.sym), e.key.keysym.mod);
 			break;
 		case SDL_QUIT:
 			mLooping = false;
@@ -161,8 +161,8 @@ private:
 	mMove: dg(int, int);
 	mButton: dg(int);
 	mText: dg(scope const(char)[]);
-	mKeyUp: dg(Key);
-	mKeyDown: dg(Key);
+	mKeyUp: dg(Key, Mod);
+	mKeyDown: dg(Key, Mod);
 
 
 public:
@@ -211,9 +211,9 @@ public:
 	{ if (dgt is null) { mButton = StubButton; } else { mButton = dgt; } }
 	override @property fn onText(dgt: dg(scope const(char)[]))
 	{ if (dgt is null) { mText = StubText; } else { mText = dgt; } }
-	override @property fn onKeyUp(dgt: dg(Key))
+	override @property fn onKeyUp(dgt: dg(Key, Mod))
 	{ if (dgt is null) { mKeyUp = StubKeyUp; } else { mKeyUp = dgt; } }
-	override @property fn onKeyDown(dgt: dg(Key))
+	override @property fn onKeyDown(dgt: dg(Key, Mod))
 	{ if (dgt is null) { mKeyDown = StubKeyDown; } else { mKeyDown = dgt; } }
 
 	fn StubDestroy() {}
@@ -223,6 +223,6 @@ public:
 	fn StubMove(int, int) {}
 	fn StubButton(int) {}
 	fn StubText(scope const(char)[]) {}
-	fn StubKeyUp(Key) {}
-	fn StubKeyDown(Key) {}
+	fn StubKeyUp(Key, Mod) {}
+	fn StubKeyDown(Key, Mod) {}
 }

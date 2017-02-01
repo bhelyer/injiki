@@ -58,7 +58,7 @@ public:
 		}
 	}
 
-	override fn onKeyDown(key: Key)
+	override fn onKeyDown(key: Key, mod: Mod)
 	{
 		fn doNothing(dchar) {}
 		switch (key) with (Key) {
