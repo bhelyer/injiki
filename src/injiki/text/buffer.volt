@@ -9,6 +9,7 @@ import core.exception;
 import watt.io;
 import watt.io.streams;
 import watt.text.utf;
+import watt.text.format;
 
 import injiki.text.util;
 
@@ -32,6 +33,7 @@ private:
 	mHoleIndex: size_t;  //< Where the hole starts in the buffer.
 	mHoleSize:  size_t;  //< How many bytes long the hole is.
 	mPoint:     size_t;  //< Insertion point.
+	mFilename:  string;
 
 
 public:
@@ -52,6 +54,7 @@ public:
 	/// Open a file
 	fn loadFile(fname: string)
 	{
+		mFilename = fname;
 		ifs := new InputFileStream(fname);
 		if (ifs.handle is null) {
 			throw new Exception("couldn't open file");
@@ -64,6 +67,28 @@ public:
 			putc(c);
 		}
 		ifs.close();
+	}
+
+	/// Save a file.
+	fn saveFile(fname: string)
+	{
+		ofs := new OutputFileStream(fname);
+		oldPoint := mPoint;
+		seekRaw(0);
+		while (!eof()) {
+			ofs.put(getc());
+		}
+		ofs.close();
+		seekRaw(oldPoint);
+	}
+
+	/// Save a file to the name it was loaded as.
+	fn saveFile()
+	{
+		if (mFilename == "") {
+			throw new Exception("no filename associated with buffer");
+		}
+		saveFile(mFilename);
 	}
 
 	/// Return the character at the point.
@@ -86,7 +111,7 @@ public:
 		if (replacing) {
 			existingSize = utf8bytes(rc());
 		}
-		moveHole(mPoint);
+		moveHole();
 
 		if (!replacing) {
 			expand(newSize);
@@ -141,6 +166,18 @@ public:
 		}
 	}
 
+	/// Get the point at the beginning of the line.
+	fn beginningOfLine() size_t
+	{
+		fn doNothing(dchar) {}
+		getBackwardsUntil('\n', doNothing);
+		if (mBuffer[mPoint] != '\n') {
+			return mPoint;
+		}
+		getc();
+		return mPoint;
+	}
+
 	/// Call back, call dgt with rc's result until the point is 'c', or 0.
 	fn getBackwardsUntil(c: dchar, dgt: dg(dchar))
 	{
@@ -161,7 +198,6 @@ public:
 
 	/// Insert a character at the point.
 	fn ins(c: dchar) {
-		moveHole(mPoint);
 		fn dgt(s: scope const(char)[]) {
 			expand(s.length);
 			for (i: size_t = 0; i < s.length; ++i) {
@@ -197,7 +233,11 @@ public:
 		if (mPoint < mHoleIndex) {
 			return false;
 		}
-		return (mHoleIndex + mHoleSize) >= mBuffer.length;
+		if (mPoint == mHoleIndex && mHoleIndex + mHoleSize >= mBuffer.length) {
+			return true;
+		} else {
+			return mPoint >= mBuffer.length;
+		}
 	}
 
 	/// Returns 0 if the string matches the one under the point.
@@ -218,10 +258,21 @@ public:
 		mPoint = i;
 	}
 
-	// Return the current point.
+	/// Return the current point location.
 	fn point() size_t
 	{
 		return mPoint;
+	}
+
+	/// Return a string containing information about buffer size, for debugging.
+	fn stats() string
+	{
+		info: string;
+		info ~= format("mBuffer.length = %s\n", mBuffer.length);
+		info ~= format("mHoleIndex = %s\n", mHoleIndex);
+		info ~= format("mHoleSize = %s\n", mHoleSize);
+		info ~= format("mPoint = %s\n", mPoint);
+		return info;
 	}
 
 	override fn toString() string
@@ -235,7 +286,7 @@ private:
 	fn expand(n: size_t)
 	{
 		if (mPoint != mHoleIndex) {
-			moveHole(mPoint);
+			moveHole();
 		}
 		if (mHoleSize < n) {
 			newBuffer := new char[](mBuffer.length + HOLESIZE);
@@ -250,9 +301,16 @@ private:
 		mHoleSize -= n;
 	}
 
-	/// Move the hole to the index i.
-	fn moveHole(i: size_t)
+	/// Move the hole to the point.
+	fn moveHole()
 	{
+		/* Since the point moves around the hole, we have to adjust for that
+		 * if the point is on the right of it.
+		 */
+		i := mPoint > mHoleIndex ? mPoint - mHoleSize : mPoint;
+		if (i == mHoleIndex) {
+			return;
+		}
 		endOfHole := mHoleIndex + mHoleSize;
 		if (i > mHoleIndex) {
 			d := i - mHoleIndex;
