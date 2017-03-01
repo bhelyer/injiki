@@ -3,10 +3,9 @@
 /**
  * Source file for timers.
  */
-module inijki.ui.gl.timer;
+module injiki.ui.gl.timer;
 
 import lib.gl;
-import injiki.ui.gl.timer;
 
 
 struct Timer
