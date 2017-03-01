@@ -9,6 +9,7 @@ import watt.io;
 import watt.conv;
 import injiki.core;
 import injiki.ui.key;
+import injiki.ui.gl.timer;
 
 
 class CoreSDL : Core
@@ -21,6 +22,7 @@ private:
 	mClose: dg();
 	mLooping: bool;
 	mCreated: bool;
+	mTimer: Timer;
 
 
 public:
@@ -60,6 +62,10 @@ public:
 
 	override int loop()
 	{
+		counter: i32;
+		accum: u64;
+		mTimer.setup();
+
 		while (mLooping) {
 			SDL_Event e;
 
@@ -75,10 +81,25 @@ public:
 			} while (SDL_PollEvent(&e));
 
 			// Redraw the window.
+			mTimer.start();
 			mWin.mRender();
+			mTimer.stop();
 			SDL_GL_SwapWindow(mWindow);
+
+			val: u64;
+			if (mTimer.getValue(out val)) {
+				val /= (1_000_000_000 / 1_000_000u);
+				accum += val;
+				counter++;
+			}
+			if (counter == 8) {
+				accum /= 8;
+				writefln("Avg %s.%03sms", accum / 1000, accum % 1000);
+				counter = 0; accum = 0;
+			}
 		}
 
+		mTimer.close();
 		mWin.mDestroy();
 		mClose();
 
