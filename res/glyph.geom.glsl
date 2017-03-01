@@ -4,11 +4,15 @@
 
 layout (points) in;
 layout (location = 0) in vec4[] inPosition;
-layout (location = 1) in vec3[] inGlyph;
+layout (location = 1) in float[] inGlyph;
+layout (location = 2) in vec3[] inFg;
+layout (location = 3) in vec3[] inBg;
 
 layout (triangle_strip, max_vertices = 4) out;
-layout (location = 0) out vec3 outGlyph;
+layout (location = 0) out float outGlyph;
 layout (location = 1) out vec2 outUV;
+layout (location = 2) out vec3 outFg;
+layout (location = 3) out vec3 outBg;
 out gl_PerVertex
 {
 	vec4 gl_Position;
@@ -24,6 +28,8 @@ void emit(vec2 pos, vec2 uv)
 {
 	outGlyph = inGlyph[0];
 	outUV = uv;
+	outFg = inFg[0];
+	outBg = inBg[0];
 	gl_Position = vec4(pos, 0.0, 1.0);
 	EmitVertex();
 }

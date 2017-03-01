@@ -2,9 +2,14 @@
 #extension GL_ARB_explicit_attrib_location : require
 #extension GL_ARB_separate_shader_objects : require
 
-layout (location = 0) in vec4 inData;
-layout (location = 0) out vec4 outPosition;
-layout (location = 1) out vec3 outGlyph;
+layout (location = 0) in float inGlyph;
+layout (location = 1) in vec4 inFg;
+layout (location = 2) in vec4 inBg;
+
+layout (location = 0) flat out vec4  outPosition;
+layout (location = 1) flat out float outGlyph;
+layout (location = 2) flat out vec3  outFg;
+layout (location = 3) flat out vec3  outBg;
 
 layout (std140) uniform Uniforms {
 	vec4 info;
@@ -28,9 +33,11 @@ void main(void)
 	x = x *  glyphW - 1.0;
 	y = y * -glyphH + 1.0;
 
+	// Just passthrough the data.
+	outFg = inFg.rgb;
+	outBg = inBg.rgb;
+	outGlyph = inGlyph;
+
 	// Pack min and max for this glyph into position.
 	outPosition = vec4(x, y, x + glyphW, y - glyphH);
-
-	// Glyph data is formated as 4 ubytes, the first 2 is a 16bit glyph index.
-	outGlyph = vec3(inData.y * 256 + inData.x, inData.zw);
 }

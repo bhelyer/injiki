@@ -160,6 +160,10 @@ private:
 class GlyphGrid
 {
 public:
+	enum VertexSize = 4 + 4 + 4;
+
+
+public:
 	numGlyphsX, numGlyphsY: u32;
 
 
@@ -169,7 +173,7 @@ private:
 	mRenderer: GlyphRenderer;
 	mGlyphs: GlyphStore;
 
-	mData: u32[];
+	mData: u8[];
 	mInfo: float[4];
 	mScreenW, mScreenH: u32;
 	mNumGlyphs: GLsizei;
@@ -211,14 +215,17 @@ public:
 		}
 	}
 
-	fn put(x: u32, y: u32, fg: u8, bg: u8, glyph: u16)
+	fn put(x: u32, y: u32, fg: u32, bg: u32, glyph: u32)
 	{
 		if (x >= numGlyphsX || y >= numGlyphsY) {
 			return;
 		}
 
-		val := bg << 24u | fg << 16u | glyph;
-		mData[numGlyphsX * y + x] = val;
+		index := numGlyphsX * y + x;
+		p := cast(u32*)&mData[index * VertexSize];
+		p[0] = glyph;
+		p[1] = fg;
+		p[2] = bg;
 		mDirty = true;
 	}
 
@@ -270,9 +277,13 @@ private:
 
 		glBufferData(GL_ARRAY_BUFFER, 256, null, GL_STATIC_DRAW);
 
-		stride := cast(GLsizei)4;
-		glVertexAttribPointer(0, 4, GL_UNSIGNED_BYTE, 0, stride, null);
+		stride := cast(GLsizei)VertexSize;
+		glVertexAttribPointer(0, 1,  GL_UNSIGNED_INT, GL_FALSE, stride, null);
+		glVertexAttribPointer(1, 4, GL_UNSIGNED_BYTE, GL_TRUE, stride, cast(void*)4);
+		glVertexAttribPointer(2, 4, GL_UNSIGNED_BYTE, GL_TRUE, stride, cast(void*)8);
 		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 		glBindVertexArray(0);
@@ -289,7 +300,7 @@ private:
 	fn uploadData()
 	{
 		glBindBuffer(GL_ARRAY_BUFFER, mBuffer);
-		glBufferSubData(GL_ARRAY_BUFFER, 0, mNumGlyphs * 4, cast(void*)mData.ptr);
+		glBufferSubData(GL_ARRAY_BUFFER, 0, mNumGlyphs * VertexSize, cast(void*)mData.ptr);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 
@@ -338,10 +349,10 @@ private:
 
 		// Update the host store.
 		mNumGlyphs = numGlyphs;
-		mData = new u32[](mNumGlyphs);
+		mData = new u8[](mNumGlyphs * VertexSize);
 
 		glBindBuffer(GL_ARRAY_BUFFER, mBuffer);
-		glBufferData(GL_ARRAY_BUFFER, mNumGlyphs * 4, cast(void*)mData.ptr, GL_STATIC_DRAW);
+		glBufferData(GL_ARRAY_BUFFER, mNumGlyphs * VertexSize, cast(void*)mData.ptr, GL_STATIC_DRAW);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 	}
 }

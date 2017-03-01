@@ -93,10 +93,16 @@ private:
 
 		// And then setup the renderer.
 		mGrid = new GlyphGrid(mRenderer, mGlyphs, 800, 600);
-		counter: u8;
+		counter: u32;
 		foreach (y; 0 .. mGrid.numGlyphsY) {
 			foreach (x; 0 .. mGrid.numGlyphsX) {
-				mGrid.put(x, y, 0, 0, counter++);
+				mod := counter % 256u;
+				modMinus := 255 - mod;
+				shift := ((counter / 256u) % 3) * 8;
+				bg := modMinus << shift;
+				fg := mod << 16u | mod << 8u | mod;
+				mGrid.put(x, y, fg, bg, mod);
+				counter++;
 			}
 		}
 	}
