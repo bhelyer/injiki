@@ -92,7 +92,7 @@ private:
 		}
 
 		// And then setup the renderer.
-		mGrid = new GlyphGrid(mRenderer, mGlyphs, 800, 600);
+		mGrid = new GlyphGrid(mRenderer, mGlyphs, mWin.width, mWin.height);
 		counter: u32;
 		foreach (y; 0 .. mGrid.numGlyphsY) {
 			foreach (x; 0 .. mGrid.numGlyphsX) {

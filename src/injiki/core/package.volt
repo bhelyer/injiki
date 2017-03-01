@@ -6,6 +6,12 @@ import injiki.ui.key;
 
 abstract class Core
 {
+public:
+	enum DefaultWidth  = 800;
+	enum DefaultHeight = 600;
+
+
+public:
 	global fn create() Core
 	{
 		return new CoreSDL();
@@ -33,6 +39,11 @@ abstract class Core
 
 abstract class Window
 {
+public:
+	width, height: u32;
+
+
+public:
 	abstract fn fullscreen();
 	abstract fn destroy();
 

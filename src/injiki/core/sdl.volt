@@ -112,9 +112,11 @@ private:
 
 	fn initSdl()
 	{
+		width := DefaultWidth;
+		height := DefaultHeight;
 		mWindow = SDL_CreateWindow("SdlConsole".ptr,
 			SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-			800, 600, cast(u32)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE));
+			width, height, cast(u32)(SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE));
 		assert(mWindow !is null);  // TODO: Error handling.
 
 		// We want a core context.
@@ -168,6 +170,11 @@ private:
 public:
 	this(core: CoreSDL, win: SDL_Window*, ctx: SDL_GLContext)
 	{
+		w, h: int;
+		SDL_GetWindowSize(win, &w, &h);
+		width = cast(u32)w;
+		height = cast(u32)h;
+
 		mCore = core;
 		mWindow = win;
 		mContext = ctx;
