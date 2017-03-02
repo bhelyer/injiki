@@ -45,7 +45,7 @@ public:
 
 public:
 	abstract fn fullscreen();
-	abstract fn destroy();
+	abstract fn signalDestroy();
 
 	abstract @property fn title(string);
 

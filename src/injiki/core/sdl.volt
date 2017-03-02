@@ -22,8 +22,6 @@ private:
 	mClose: dg();
 	mLooping: bool;
 	mCreated: bool;
-	mTimer: Timer;
-
 
 public:
 	this()
@@ -62,10 +60,6 @@ public:
 
 	override int loop()
 	{
-		counter: i32;
-		accum: u64;
-		mTimer.setup();
-
 		while (mLooping) {
 			SDL_Event e;
 
@@ -81,33 +75,24 @@ public:
 			} while (SDL_PollEvent(&e));
 
 			// Redraw the window.
-			mTimer.start();
-			mWin.mRender();
-			mTimer.stop();
-			SDL_GL_SwapWindow(mWindow);
-
-			val: u64;
-			if (mTimer.getValue(out val)) {
-				val /= (1_000_000_000 / 1_000_000u);
-				accum += val;
-				counter++;
-			}
-			if (counter == 8) {
-				accum /= 8;
-				writefln("Avg %s.%03sms", accum / 1000, accum % 1000);
-				counter = 0; accum = 0;
-			}
+			mWin.handleRender();
 		}
 
-		mTimer.close();
 		mWin.mDestroy();
+		mWin.destroy();
 		mClose();
+		close();
 
 		return 0;
 	}
 
 
 private:
+	fn close()
+	{
+
+	}
+
 	fn handleEvents(ref e: SDL_Event)
 	{
 		switch (e.type) {
@@ -187,6 +172,10 @@ private:
 	mKeyUp: dg(Key, Mod);
 	mKeyDown: dg(Key, Mod);
 
+	mTimer: Timer;
+	mTimerCounter: i32;
+	mTimerAccum: u64;
+
 
 public:
 	this(core: CoreSDL, win: SDL_Window*, ctx: SDL_GLContext)
@@ -207,6 +196,8 @@ public:
 		mText = StubText;
 		mKeyUp = StubKeyDown;
 		mKeyDown = StubKeyDown;
+
+		mTimer.setup();
 	}
 
 	override fn fullscreen()
@@ -214,7 +205,7 @@ public:
 
 	}
 
-	override fn destroy()
+	override fn signalDestroy()
 	{
 		mCore.signalClose();
 	}
@@ -243,6 +234,39 @@ public:
 	{ if (dgt is null) { mKeyUp = StubKeyUp; } else { mKeyUp = dgt; } }
 	override @property fn onKeyDown(dgt: dg(Key, Mod))
 	{ if (dgt is null) { mKeyDown = StubKeyDown; } else { mKeyDown = dgt; } }
+
+
+private:
+	fn destroy()
+	{
+		mTimer.close();
+	}
+
+	fn handleRender()
+	{
+		//if (!mDirty) {
+		//	return;
+		//}
+
+		// Redraw the window.
+		mTimer.start();
+		mRender();
+		mTimer.stop();
+		SDL_GL_SwapWindow(mWindow);
+
+		val: u64;
+		if (mTimer.getValue(out val)) {
+			val /= (1_000_000_000 / 1_000_000u);
+			mTimerAccum += val;
+			mTimerCounter++;
+		}
+
+		if (mTimerCounter == 8) {
+			mTimerAccum /= 8;
+			writefln("Avg %s.%03sms", mTimerAccum / 1000, mTimerAccum % 1000);
+			mTimerCounter = 0; mTimerAccum = 0;
+		}
+	}
 
 	fn StubDestroy() {}
 	fn StubRender() {}
