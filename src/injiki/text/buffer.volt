@@ -304,14 +304,14 @@ private:
 	/// Move the hole to the point.
 	fn moveHole()
 	{
-		/* Since the point moves around the hole, we have to adjust for that
-		 * if the point is on the right of it.
-		 */
-		i := mPoint > mHoleIndex ? mPoint - mHoleSize : mPoint;
-		if (i == mHoleIndex) {
+		if (mPoint == mHoleIndex) {
 			return;
 		}
 		endOfHole := mHoleIndex + mHoleSize;
+		/* Since the point moves around the hole, we have to adjust for that
+		 * if the point is on the right of it.
+		 */
+		i := mPoint >= endOfHole ? mPoint - mHoleSize : mPoint;
 		if (i > mHoleIndex) {
 			d := i - mHoleIndex;
 			beginning := mBuffer[0 .. mHoleIndex] ~ mBuffer[endOfHole .. endOfHole + d];
