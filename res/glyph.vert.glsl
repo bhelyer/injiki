@@ -6,10 +6,10 @@ layout (location = 0) in float inGlyph;
 layout (location = 1) in vec4 inFg;
 layout (location = 2) in vec4 inBg;
 
-layout (location = 0) flat out vec4  outPosition;
-layout (location = 1) flat out float outGlyph;
-layout (location = 2) flat out vec3  outFg;
-layout (location = 3) flat out vec3  outBg;
+layout (location = 0) out  vec4 outPosition;
+layout (location = 1) out float outGlyph;
+layout (location = 2) out  vec3 outFg;
+layout (location = 3) out  vec3 outBg;
 
 layout (std140) uniform Uniforms {
 	vec4 info;

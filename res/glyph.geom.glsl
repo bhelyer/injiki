@@ -3,16 +3,16 @@
 #extension GL_ARB_separate_shader_objects : require
 
 layout (points) in;
-layout (location = 0) in vec4[] inPosition;
+layout (location = 0) in  vec4[] inPosition;
 layout (location = 1) in float[] inGlyph;
-layout (location = 2) in vec3[] inFg;
-layout (location = 3) in vec3[] inBg;
+layout (location = 2) in  vec3[] inFg;
+layout (location = 3) in  vec3[] inBg;
 
 layout (triangle_strip, max_vertices = 4) out;
-layout (location = 0) out float outGlyph;
-layout (location = 1) out vec2 outUV;
-layout (location = 2) out vec3 outFg;
-layout (location = 3) out vec3 outBg;
+layout (location = 0) flat out float outGlyph;
+layout (location = 1)      out  vec2 outUV;
+layout (location = 2) flat out  vec3 outFg;
+layout (location = 3) flat out  vec3 outBg;
 out gl_PerVertex
 {
 	vec4 gl_Position;
