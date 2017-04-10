@@ -56,7 +56,7 @@ public:
 	{
 		mFilename = fname;
 		ifs := new InputFileStream(fname);
-		if (ifs.handle is null) {
+		if (!ifs.isOpen) {
 			throw new Exception("couldn't open file");
 		}
 		while (!ifs.eof()) {
