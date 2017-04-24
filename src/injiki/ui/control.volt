@@ -68,7 +68,7 @@ private:
 		mGrid.render();
 	}
 
-	fn onText(str: const(char)[])
+	fn onText(str: scope const(char)[])
 	{
 		mGrid.put(0, 0, 0, 0, cast(u8)str[0]);
 	}
