@@ -3,7 +3,7 @@ module injiki.text.util;
 import core.exception;
 
 
-/**
+/*!
  * Given a character, return how many bytes it will take
  * when encoded as UTF-8.
  */

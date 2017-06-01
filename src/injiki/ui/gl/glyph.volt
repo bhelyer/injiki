@@ -9,7 +9,7 @@ import injiki.ui.gl.util;
 import injiki.ui.gl.shader;
 
 
-/**
+/*!
  * Class containing all the shared resources needed for drawing glyphs.
  */
 class GlyphRenderer
@@ -86,7 +86,7 @@ fn failedExtension(ext: string) Exception
 	return new Exception(str);
 }
 
-/**
+/*!
  * Class that represent one size of glyphs to be used for rendering.
  */
 class GlyphStore
@@ -154,7 +154,7 @@ private:
 	}
 }
 
-/**
+/*!
  * A two dimensional grid of glyph ids paired with color information.
  */
 class GlyphGrid

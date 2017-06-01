@@ -8,7 +8,7 @@ import injiki.ui.key;
 import injiki.ui.components.component;
 import injiki.ui.gl.glyph;
 
-/**
+/*!
  * Display a Buffer in a rectangle on screen.
  */
 class TextView : Component
@@ -38,7 +38,7 @@ private:
 
 
 public:
-	/**
+	/*!
 	 * Construct a new TextView that displays buffer in a GlyphGrid.
 	 * Params:
 	 *   buffer = the Buffer to display.
@@ -125,7 +125,7 @@ public:
 
 private:
 
-	/// Move a point to the next line, increment a line count.
+	//! Move a point to the next line, increment a line count.
 	fn nextLine(ref p: size_t, ref lineCount: size_t)
 	{
 		fn doNothing(dchar) {}
@@ -144,7 +144,7 @@ private:
 		}
 	}
 
-	/// Move a point to the previous line, decrement a line count.
+	//! Move a point to the previous line, decrement a line count.
 	fn previousLine(ref p: size_t, ref lineCount: size_t)
 	{
 		fn doNothing(dchar) {}

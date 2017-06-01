@@ -35,7 +35,7 @@ public:
 		mWin = new WindowSDL(this, mWindow, mContext);
 	}
 
-	/**
+	/*!
 	 * Signals to the core that the application wants to shut down.
 	 *
 	 * Backlog of signals may be fired until finally the close signal is fired.
@@ -52,7 +52,7 @@ public:
 		return mWin;
 	}
 
-	/**
+	/*!
 	 * Close signal, fired once when Core enters the shutdown path.
 	 */
 	override @property fn onClose(dgt: dg())

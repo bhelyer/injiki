@@ -54,7 +54,7 @@ fn isPrintable(sdlkc: SDL_Keycode) bool
 	}
 }
 
-/// Translate an SDL_Keycode to an Injiki Key enum value.
+//! Translate an SDL_Keycode to an Injiki Key enum value.
 fn translateKey(sdlkc: SDL_Keycode) Key
 {
 	switch (sdlkc) {

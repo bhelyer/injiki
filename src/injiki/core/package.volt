@@ -19,19 +19,19 @@ public:
 
 	abstract fn loop() i32;
 
-	/**
+	/*!
 	 * Creates a new window.
 	 */
 	abstract fn createWindow() Window;
 
-	/**
+	/*!
 	 * Signals to the core that the application wants to shut down.
 	 *
 	 * Backlog of signals may be fired until finally the close signal is fired.
 	 */
 	abstract fn signalClose();
 
-	/**
+	/*!
 	 * Close signal, fired once when Core enters the shutdown path.
 	 */
 	abstract @property fn onClose(dgt: dg());

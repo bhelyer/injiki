@@ -14,7 +14,7 @@ import watt.text.format;
 import injiki.text.util;
 
 
-/**
+/*!
  * A Buffer represents a series of characters able to be modified at any point.
  *
  * Implemented using a buffer gap.
@@ -42,7 +42,7 @@ public:
 		reset();
 	}
 
-	/// Initialises an empty buffer, ready for insertion.
+	//! Initialises an empty buffer, ready for insertion.
 	fn reset()
 	{
 		mBuffer = new char[](HOLESIZE);
@@ -51,7 +51,7 @@ public:
 		mHoleSize = mBuffer.length;
 	}
 
-	/// Open a file
+	//! Open a file
 	fn loadFile(fname: string)
 	{
 		mFilename = fname;
@@ -69,7 +69,7 @@ public:
 		ifs.close();
 	}
 
-	/// Save a file.
+	//! Save a file.
 	fn saveFile(fname: string)
 	{
 		ofs := new OutputFileStream(fname);
@@ -82,7 +82,7 @@ public:
 		seekRaw(oldPoint);
 	}
 
-	/// Save a file to the name it was loaded as.
+	//! Save a file to the name it was loaded as.
 	fn saveFile()
 	{
 		if (mFilename == "") {
@@ -91,7 +91,7 @@ public:
 		saveFile(mFilename);
 	}
 
-	/// Return the character at the point.
+	//! Return the character at the point.
 	fn rc() dchar
 	{
 		if (mPoint == mHoleIndex) {
@@ -101,7 +101,7 @@ public:
 		return decode(cast(string)mBuffer[mPoint .. $], ref i);
 	}
 
-	/// Write a character at the point.
+	//! Write a character at the point.
 	fn wc(c: dchar)
 	{
 		newSize := utf8bytes(c);
@@ -133,7 +133,7 @@ public:
 		encode(dgt, c);
 	}
 
-	/// Return the character at the point and advance it.
+	//! Return the character at the point and advance it.
 	fn getc() dchar
 	{
 		if (mPoint == mHoleIndex) {
@@ -145,7 +145,7 @@ public:
 		return c;
 	}
 
-	/// Move the point back one character.
+	//! Move the point back one character.
 	fn back()
 	{
 		do {
@@ -158,7 +158,7 @@ public:
 		} while ((mBuffer[mPoint] & 0xC0) == 0x80);
 	}
 
-	/// Call dgt with getc's result until 'c' is at the point, or EOF is reached.
+	//! Call dgt with getc's result until 'c' is at the point, or EOF is reached.
 	fn getUntil(c: dchar, dgt: dg(dchar))
 	{
 		while (!eof() && rc() != c) {
@@ -166,7 +166,7 @@ public:
 		}
 	}
 
-	/// Get the point at the beginning of the line.
+	//! Get the point at the beginning of the line.
 	fn beginningOfLine() size_t
 	{
 		fn doNothing(dchar) {}
@@ -178,7 +178,7 @@ public:
 		return mPoint;
 	}
 
-	/// Call back, call dgt with rc's result until the point is 'c', or 0.
+	//! Call back, call dgt with rc's result until the point is 'c', or 0.
 	fn getBackwardsUntil(c: dchar, dgt: dg(dchar))
 	{
 		//while (mPoint > 0 && rc() != c) {
@@ -188,7 +188,7 @@ public:
 		} while (mPoint > 0 && rc() != c);
 	}
 
-	/// Write a character at the point and advance it.
+	//! Write a character at the point and advance it.
 	fn putc(c: dchar)
 	{
 		size := utf8bytes(c);
@@ -196,7 +196,7 @@ public:
 		mPoint += size;
 	}
 
-	/// Insert a character at the point.
+	//! Insert a character at the point.
 	fn ins(c: dchar) {
 		fn dgt(s: scope const(char)[]) {
 			expand(s.length);
@@ -207,7 +207,7 @@ public:
 		encode(dgt, c);
 	}
 
-	/// Insert a string at the point.
+	//! Insert a string at the point.
 	fn ins(s: string)
 	{
 		// ins(c) will keep inserting at the same point, so insert the string backwards.
@@ -216,18 +216,18 @@ public:
 		}
 	}
 
-	/// Delete n characters, beginning at the point.
+	//! Delete n characters, beginning at the point.
 	fn del(n: size_t)
 	{
 	}
 
-	/// Return the number of characters in the file.
+	//! Return the number of characters in the file.
 	fn size() size_t
 	{
 		return count(toString());
 	}
 
-	/// Returns true if we're at the end of file.
+	//! Returns true if we're at the end of file.
 	fn eof() bool
 	{
 		if (mPoint < mHoleIndex) {
@@ -240,31 +240,31 @@ public:
 		}
 	}
 
-	/// Returns 0 if the string matches the one under the point.
+	//! Returns 0 if the string matches the one under the point.
 	fn cmp(s: string) i32
 	{
 		return 0;
 	}
 
-	/// Returns 0 if the string matches the one under the point, ignoring case.
+	//! Returns 0 if the string matches the one under the point, ignoring case.
 	fn icmp(s: string) i32
 	{
 		return 0;
 	}
 
-	/// Set the point to i. Not checked, may jump into the middle of a codepoint, etc.
+	//! Set the point to i. Not checked, may jump into the middle of a codepoint, etc.
 	fn seekRaw(i: size_t)
 	{
 		mPoint = i;
 	}
 
-	/// Return the current point location.
+	//! Return the current point location.
 	fn point() size_t
 	{
 		return mPoint;
 	}
 
-	/// Return a string containing information about buffer size, for debugging.
+	//! Return a string containing information about buffer size, for debugging.
 	fn stats() string
 	{
 		info: string;
@@ -282,7 +282,7 @@ public:
 
 
 private:
-	/// Prepare to write n bytes at the point.
+	//! Prepare to write n bytes at the point.
 	fn expand(n: size_t)
 	{
 		if (mPoint != mHoleIndex) {
@@ -301,7 +301,7 @@ private:
 		mHoleSize -= n;
 	}
 
-	/// Move the hole to the point.
+	//! Move the hole to the point.
 	fn moveHole()
 	{
 		if (mPoint == mHoleIndex) {
