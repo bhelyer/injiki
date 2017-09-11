@@ -1,3 +1,3 @@
 library('volt-build')
 
-voltBuild('injiki')
+voltBuildExe('injiki')
