@@ -1,0 +1,6 @@
+name = "injiki"
+dependencies = ["amp", "watt"]
+[platform.msvc]
+libraries = ["SDL2.lib"]
+[platform.'linux || osx']
+commands = ["sdl2-config --libs"]
