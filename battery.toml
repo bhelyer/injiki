@@ -1,5 +1,5 @@
 name = "injiki"
-dependencies = ["amp", "watt"]
+dependencies = ["amp.sdl2", "watt"]
 [platform.msvc]
 libraries = ["SDL2.lib"]
 [platform.'linux || osx']
